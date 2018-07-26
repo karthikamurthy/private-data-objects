@@ -58,7 +58,7 @@ def CreateAndRegisterEnclave(config) :
     ledger_config = config.get('Sawtooth')
 
     try :
-        enclave_helper.initialize_enclave(enclave_config)
+        enclave_helper.initialize_enclave(enclave_config,enclave_type="intkey")
         enclave = enclave_helper.Enclave.create_new_enclave()
     except Exception as e :
         logger.error('failed to initialize the enclave; %s', str(e))
@@ -93,7 +93,7 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
 
     contract_name = 'mock-contract'
     contract_code = contract_helper.ContractCode.create_from_scheme_file(contract_name, source_name = 'intkey', search_path = [".", "..", "contracts"])
-    
+    logger.info('name && code: %s %s ',contract_name, contract_code.code);
     # create the provisioning servers
     if use_pservice :
         pservice_urls = config.get("pservice-urls")
@@ -194,7 +194,6 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
     # --------------------------------------------------
     try :
         initialize_request = contract.create_initialize_request(contract_creator_keys, enclave,expression='1,1')
-       
         initialize_response = initialize_request.evaluate()
         if initialize_response.status is False :
             logger.error('contract initialization failed: %s', initialize_response.result)

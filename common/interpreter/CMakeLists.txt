@@ -37,8 +37,7 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "${SGX_SDK}/include/libcxx")
 ################################################################################
 # Interpretter subdirectory
 ################################################################################
-IF($ENV{GIPSY_ENABLED})
+
 ADD_SUBDIRECTORY (gipsy_scheme)
-ELSE()
 ADD_SUBDIRECTORY(intkey_cpp_contract_test)
-ENDIF()
+

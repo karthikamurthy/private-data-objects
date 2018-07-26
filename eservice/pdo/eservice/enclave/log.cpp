@@ -18,80 +18,66 @@
 #include <stdio.h>
 #include "c11_support.h"
 
-namespace pdo {
+namespace pdo
+{
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// XX Declaration of static helper functions                 XX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    // XX Declaration of static helper functions                 XX
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+static void LogStdOut(pdo_log_level_t, const char* msg);
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    static void LogStdOut(
-        pdo_log_level_t,
-        const char* msg
-        );
+static pdo_log_t g_LogFunction = LogStdOut;
 
-    static pdo_log_t g_LogFunction = LogStdOut;
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+void Log(pdo_log_level_t logLevel, const char* message);
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    void Log(
-        pdo_log_level_t logLevel,
-        const char* message
-        );
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// XX External interface                                     XX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    // XX External interface                                     XX
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    void SetLogFunction(
-        pdo_log_t logFunction
-        )
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+void SetLogFunction(pdo_log_t logFunction)
+{
+    if (logFunction)
     {
-        if (logFunction) {
-            g_LogFunction = logFunction;
-        }
-    } // SetLogFunction
+        g_LogFunction = logFunction;
+    }
+}  // SetLogFunction
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    void Log(
-        pdo_log_level_t logLevel,
-        const char* message,
-        ...)
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+void Log(pdo_log_level_t logLevel, const char* message, ...)
+{
+    if (g_LogFunction)
     {
-        if (g_LogFunction) {
-            const size_t BUFFER_SIZE = 2048;
-            char msg[BUFFER_SIZE] = { '\0' };
-            va_list ap;
-            va_start(ap, message);
-            vsnprintf_s(msg, BUFFER_SIZE, message, ap);
-            va_end(ap);
+        const size_t BUFFER_SIZE = 2048;
+        char msg[BUFFER_SIZE] = {'\0'};
+        va_list ap;
+        va_start(ap, message);
+        vsnprintf_s(msg, BUFFER_SIZE, message, ap);
+        va_end(ap);
 
-            g_LogFunction(logLevel, msg);
-        }
-    } // Log
+        g_LogFunction(logLevel, msg);
+    }
+}  // Log
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    // XX Internal helper functions                              XX
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// XX Internal helper functions                              XX
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    static void LogStdOut(
-        pdo_log_level_t logLevel,
-        const char* message
-        )
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+static void LogStdOut(pdo_log_level_t logLevel, const char* message)
+{
+    printf("%s", message);
+}  // LogStdOut
+
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+void Log(pdo_log_level_t logLevel, const char* message)
+{
+    if (g_LogFunction)
     {
-        printf("%s", message);
-    } // LogStdOut
+        g_LogFunction(logLevel, message);
+    }
+}  // Log
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    void Log(
-        pdo_log_level_t logLevel,
-        const char* message
-        )
-    {
-        if (g_LogFunction) {
-            g_LogFunction(logLevel, message);
-        }
-    } // Log
-
-} // namespace pdo
+}  // namespace pdo

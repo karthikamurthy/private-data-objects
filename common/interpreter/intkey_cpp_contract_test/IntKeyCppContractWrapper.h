@@ -4,8 +4,11 @@
 #include <string>
 using namespace std;
 #include "ContractInterpreter.h"
+#include "CppProcessor.h"
 #include "IntKeyCppContractExecuter.h"
 namespace pc = pdo::contracts;
+
+pdo::contracts::ContractInterpreter* intkey_factory();
 
 class IntKeyCppContractWrapperException : public std::exception
 {
@@ -43,6 +46,6 @@ private:
     bool HandleFailure_Code();
     bool HandleFailure_Message();
     bool HandleFailure_State();
-
     IntKeyCppContractExecuter executer;
+
 };

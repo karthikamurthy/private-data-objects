@@ -88,7 +88,6 @@ namespace std {
 %include "enclave_info.h"
 %include "contract.h"
 %include "pdo_enclave.h"
-
 %init %{
     InitializePDOEnclaveModule();
 %}

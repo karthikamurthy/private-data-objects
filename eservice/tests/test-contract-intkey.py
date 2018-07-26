@@ -59,7 +59,7 @@ def CreateAndRegisterEnclave(config) :
     ledger_config = config.get('Sawtooth')
 
     try :
-        enclave_helper.initialize_enclave(enclave_config)
+        enclave_helper.initialize_enclave(enclave_config,"intkey")
         enclave = enclave_helper.Enclave.create_new_enclave()
     except Exception as e :
         logger.error('failed to initialize the enclave; %s', str(e))

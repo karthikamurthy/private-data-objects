@@ -14,9 +14,9 @@
  */
 
 #include <stdlib.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 #include "error.h"
 #include "pdo_error.h"
@@ -24,20 +24,12 @@
 #define ENCODESIGNATURE 1
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-void ThrowPDOError(
-    pdo_err_t ret
-    );
+void ThrowPDOError(pdo_err_t ret);
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-void PyLog(
-    pdo_log_level_t type,
-    const char *msg
-    );
+void PyLog(pdo_log_level_t type, const char* msg);
 
-void PyLogV(
-    pdo_log_level_t type,
-    const char *msg,
-    ...);
+void PyLogV(pdo_log_level_t type, const char* msg, ...);
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 void InitializeInternal();

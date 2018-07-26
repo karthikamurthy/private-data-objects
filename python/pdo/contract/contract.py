@@ -147,7 +147,10 @@ class Contract(object) :
         serialized = dict()
         serialized['contract_id'] = self.contract_id
         serialized['creator_id'] = self.creator_id
-        serialized['contract_code'] = self.contract_code.serialize()
+        try :
+           serialized['contract_code'] = self.contract_code.serialize()
+        except :
+           serialized['contract_code'] = ""
 
         # this encoding is rather verbose, but mirrors the one that the ledger
         # currently uses

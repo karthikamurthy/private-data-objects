@@ -23,16 +23,11 @@ bool is_sgx_simulator();
 class pdo_enclave_info
 {
 public:
-    pdo_enclave_info(
-        const std::string& enclaveModulePath,
-        const std::string& spid
-        );
+    pdo_enclave_info(const std::string& enclaveModulePath, const std::string& spid);
     virtual ~pdo_enclave_info();
     std::string get_epid_group();
-    void set_signature_revocation_list(
-        const std::string& signature_revocation_list
-        );
+    void set_signature_revocation_list(const std::string& signature_revocation_list);
 
-    std::string mr_enclave;         // hex encoding of the enclave measurement
-    std::string basename;           // hex encoding of the basename
-}; // class pdo_enclave_info
+    std::string mr_enclave;  // hex encoding of the enclave measurement
+    std::string basename;    // hex encoding of the basename
+};                           // class pdo_enclave_info

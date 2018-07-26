@@ -1,9 +1,15 @@
+#include "IntKeyCppContractWrapper.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "IntKeyCppContractWrapper.h"
 extern "C" {
 void printf(const char* fmt, ...);
 }
+
+pdo::contracts::ContractInterpreter* intkey_factory()
+{
+    return new IntKeyCppContractWrapper();
+}
+
 IntKeyCppContractWrapper::IntKeyCppContractWrapper() {}
 
 IntKeyCppContractWrapper::~IntKeyCppContractWrapper() {}
