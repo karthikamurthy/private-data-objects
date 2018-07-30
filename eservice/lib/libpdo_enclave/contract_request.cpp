@@ -33,7 +33,7 @@
 #include "interpreter/ContractInterpreter.h"
 #include "interpreter/CppProcessor.h"
 #ifdef INTKEY_CPP_CONTRACT_TEST
-#include "interpreter/intkey_cpp_contract_test/IntKeyCppContractWrapper.h"
+#include "interpreter/cpp_processor/CppProcessorHandler.h"
 #else
 #include "interpreter/gipsy_scheme/GipsyInterpreter.h"
 #endif

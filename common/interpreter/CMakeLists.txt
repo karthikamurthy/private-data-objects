@@ -39,5 +39,5 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "${SGX_SDK}/include/libcxx")
 ################################################################################
 
 ADD_SUBDIRECTORY (gipsy_scheme)
-ADD_SUBDIRECTORY(intkey_cpp_contract_test)
+ADD_SUBDIRECTORY(cpp_processor)
 
