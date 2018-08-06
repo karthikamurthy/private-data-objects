@@ -15,15 +15,10 @@
 
 #include <map>
 #include <string>
+#include "CppProcessor.h"
 
-// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-std::map<std::string, std::string> contract_verify_secrets(
-    const std::string& sealedSignupData, /* base64 encoded string */
-    const std::string& contractId,
-    const std::string& contractCreatorId,     /* contract creators verifying key */
-    const std::string& serializedSecretList); /* json */
+extern pdo::contracts::ContractInterpreter* intkey_factory();
 
-// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-std::string contract_handle_contract_request(const std::string& sealedSignupData,
-    const std::string& encryptedSessionKey,
-    const std::string& serializedRequest);
+ContractDispatchTableEntry contractDisptachTable[] = {{"intkey:", intkey_factory},
+    //      { “xo:”, xo_factory },
+    {NULL, NULL}};

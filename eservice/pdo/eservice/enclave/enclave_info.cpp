@@ -28,23 +28,16 @@
 bool is_sgx_simulator()
 {
     return 0 != pdo::enclave_api::base::IsSgxSimulator();
-} // _is_sgx_simulator
+}  // _is_sgx_simulator
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-pdo_enclave_info::pdo_enclave_info(
-    const std::string& enclaveModulePath,
-    const std::string& spid
-    )
+pdo_enclave_info::pdo_enclave_info(const std::string& enclaveModulePath, const std::string& spid)
 {
     PyLog(PDO_LOG_INFO, "Initializing SGX PDO enclave");
     PyLogV(PDO_LOG_DEBUG, "Enclave path: %s", enclaveModulePath.c_str());
     PyLogV(PDO_LOG_DEBUG, "SPID: %s", spid.c_str());
 
-    pdo_err_t ret = pdo::enclave_api::base::Initialize(
-        enclaveModulePath,
-        spid,
-        PyLog
-        );
+    pdo_err_t ret = pdo::enclave_api::base::Initialize(enclaveModulePath, spid, PyLog);
     ThrowPDOError(ret);
     PyLog(PDO_LOG_INFO, "SGX PDO enclave initialized.");
 
@@ -52,14 +45,12 @@ pdo_enclave_info::pdo_enclave_info(
     HexEncodedString basenameBuffer;
 
     ThrowPDOError(
-        pdo::enclave_api::base::GetEnclaveCharacteristics(
-            mrEnclaveBuffer,
-            basenameBuffer));
+        pdo::enclave_api::base::GetEnclaveCharacteristics(mrEnclaveBuffer, basenameBuffer));
 
     this->mr_enclave = mrEnclaveBuffer;
     this->basename = basenameBuffer;
 
-} // pdo_enclave_info::pdo_enclave_info
+}  // pdo_enclave_info::pdo_enclave_info
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 pdo_enclave_info::~pdo_enclave_info()
@@ -70,26 +61,23 @@ pdo_enclave_info::~pdo_enclave_info()
         TerminateInternal();
     }
     catch (...)
-    {}
+    {
+    }
 
-} // pdo_enclave_info::~pdo_enclave_info
+}  // pdo_enclave_info::~pdo_enclave_info
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 std::string pdo_enclave_info::get_epid_group()
 {
     HexEncodedString epidGroupBuffer;
-    ThrowPDOError(
-        pdo::enclave_api::base::GetEpidGroup(epidGroupBuffer));
+    ThrowPDOError(pdo::enclave_api::base::GetEpidGroup(epidGroupBuffer));
 
     return epidGroupBuffer;
-} // pdo_enclave_info::get_epid_group
+}  // pdo_enclave_info::get_epid_group
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-void pdo_enclave_info::set_signature_revocation_list(
-    const std::string& signature_revocation_list
-    )
+void pdo_enclave_info::set_signature_revocation_list(const std::string& signature_revocation_list)
 {
-    ThrowPDOError(
-        pdo::enclave_api::base::SetSignatureRevocationList(signature_revocation_list));
+    ThrowPDOError(pdo::enclave_api::base::SetSignatureRevocationList(signature_revocation_list));
 
-} // pdo_enclave_info::set_signature_revocation_lists
+}  // pdo_enclave_info::set_signature_revocation_lists

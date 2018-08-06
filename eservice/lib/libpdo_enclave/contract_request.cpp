@@ -30,9 +30,13 @@
 #include "contract_secrets.h"
 
 #include "enclave_utils.h"
-
 #include "interpreter/ContractInterpreter.h"
+#include "interpreter/CppProcessor.h"
+#ifdef INTKEY_CPP_CONTRACT_TEST
+#include "interpreter/cpp_processor/CppProcessorHandler.h"
+#else
 #include "interpreter/gipsy_scheme/GipsyInterpreter.h"
+#endif
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // Request format for create and send methods
@@ -63,8 +67,7 @@
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-ContractRequest::ContractRequest(
-    const ByteArray& session_key, const ByteArray& encrypted_request)
+ContractRequest::ContractRequest(const ByteArray& session_key, const ByteArray& encrypted_request)
 {
     JSON_Object* ovalue = nullptr;
 
@@ -124,8 +127,7 @@ ContractRequest::ContractRequest(
 
     ByteArray id_hash = Base64EncodedStringToByteArray(contract_id_);
     pdo::error::ThrowIf<pdo::error::ValueError>(
-        id_hash.size() != SHA256_DIGEST_LENGTH,
-        "invalid contract id");
+        id_hash.size() != SHA256_DIGEST_LENGTH, "invalid contract id");
 
     contract_state_.Unpack(state_encryption_key_, ovalue, id_hash, contract_code_.ComputeHash());
 
@@ -142,10 +144,12 @@ ContractResponse ContractRequest::process_initialization_request(void)
     // the only reason for the try/catch here is to provide some logging for the error
     try
     {
+#ifdef INTKEY_CPP_CONTRACT_TEST
+        CppProcessor interpreter;
+#else
         GipsyInterpreter interpreter;
+#endif
 
-        // interpreter.create_initial_contract_state(contractid, creatorid, contractcode, message,
-        // state)
         pdo::contracts::ContractCode code;
         code.Code = contract_code_.code_;
         code.Name = contract_code_.name_;
@@ -167,10 +171,8 @@ ContractResponse ContractRequest::process_initialization_request(void)
     }
     catch (pdo::error::ValueError& e)
     {
-        SAFE_LOG(PDO_LOG_ERROR,
-                 "failed initialization for contract %s: %s",
-                 contract_code_.name_.c_str(),
-                 e.what());
+        SAFE_LOG(PDO_LOG_ERROR, "failed initialization for contract %s: %s",
+            contract_code_.name_.c_str(), e.what());
 
         ByteArray error_state(0);
         std::map<string, string> dependencies;
@@ -181,10 +183,8 @@ ContractResponse ContractRequest::process_initialization_request(void)
     catch (pdo::error::Error& e)
     {
         SAFE_LOG(PDO_LOG_ERROR,
-                 "exception while processing update for contract %s with message %s: %s",
-                 contract_code_.name_.c_str(),
-                 contract_message_.expression_.c_str(),
-                 e.what());
+            "exception while processing update for contract %s with message %s: %s",
+            contract_code_.name_.c_str(), contract_message_.expression_.c_str(), e.what());
 
         ByteArray error_state(0);
         std::map<string, string> dependencies;
@@ -192,10 +192,22 @@ ContractResponse ContractRequest::process_initialization_request(void)
         response.operation_succeeded_ = false;
         return response;
     }
+#ifdef INTKEY_CPP_CONTRACT_TEST
+    catch (IntKeyCppContractWrapperException& e)
+    {
+        SAFE_LOG(PDO_LOG_ERROR, "failed inside IntkeyContractWrapper %s: %s",
+            contract_code_.name_.c_str(), e.what());
+
+        ByteArray error_state(0);
+        std::map<string, string> dependencies;
+        ContractResponse response(*this, dependencies, error_state, e.what());
+        response.operation_succeeded_ = false;
+        return response;
+    }
+#endif
     catch (...)
     {
-        SAFE_LOG(PDO_LOG_ERROR,
-                 "unknown exception while processing initialization request");
+        SAFE_LOG(PDO_LOG_ERROR, "unknown exception while processing initialization request");
 
         ByteArray error_state(0);
         std::map<string, string> dependencies;
@@ -211,10 +223,12 @@ ContractResponse ContractRequest::process_update_request(void)
     // the only reason for the try/catch here is to provide some logging for the error
     try
     {
+#ifdef INTKEY_CPP_CONTRACT_TEST
+        CppProcessor interpreter;
+#else
         GipsyInterpreter interpreter;
+#endif
 
-        // interpreter.create_initial_contract_state(contractid, creatorid, contractcode, message,
-        // state)
         pdo::contracts::ContractCode code;
         code.Code = contract_code_.code_;
         code.Name = contract_code_.name_;
@@ -224,7 +238,8 @@ ContractResponse ContractRequest::process_update_request(void)
         msg.OriginatorID = contract_message_.originator_verifying_key_;
 
         pdo::contracts::ContractState current_contract_state;
-        current_contract_state.StateHash = ByteArrayToBase64EncodedString(contract_state_.state_hash_);
+        current_contract_state.StateHash =
+            ByteArrayToBase64EncodedString(contract_state_.state_hash_);
         current_contract_state.State = ByteArrayToString(contract_state_.decrypted_state_);
 
         pdo::contracts::ContractState new_contract_state;
@@ -240,11 +255,8 @@ ContractResponse ContractRequest::process_update_request(void)
     }
     catch (pdo::error::ValueError& e)
     {
-        SAFE_LOG(PDO_LOG_ERROR,
-                 "failed update for contract %s with message %s: %s",
-                 contract_code_.name_.c_str(),
-                 contract_message_.expression_.c_str(),
-                 e.what());
+        SAFE_LOG(PDO_LOG_ERROR, "failed update for contract %s with message %s: %s",
+            contract_code_.name_.c_str(), contract_message_.expression_.c_str(), e.what());
 
         ByteArray error_state(0);
         std::map<string, string> dependencies;
@@ -255,10 +267,8 @@ ContractResponse ContractRequest::process_update_request(void)
     catch (pdo::error::Error& e)
     {
         SAFE_LOG(PDO_LOG_ERROR,
-                 "exception while processing update for contract %s with message %s: %s",
-                 contract_code_.name_.c_str(),
-                 contract_message_.expression_.c_str(),
-                 e.what());
+            "exception while processing update for contract %s with message %s: %s",
+            contract_code_.name_.c_str(), contract_message_.expression_.c_str(), e.what());
 
         ByteArray error_state(0);
         std::map<string, string> dependencies;
@@ -266,10 +276,22 @@ ContractResponse ContractRequest::process_update_request(void)
         response.operation_succeeded_ = false;
         return response;
     }
+#ifdef INTKEY_CPP_CONTRACT_TEST
+    catch (IntKeyCppContractWrapperException& e)
+    {
+        SAFE_LOG(PDO_LOG_ERROR, "failed inside IntkeyContractWrapper %s: %s",
+            contract_code_.name_.c_str(), e.what());
+
+        ByteArray error_state(0);
+        std::map<string, string> dependencies;
+        ContractResponse response(*this, dependencies, error_state, e.what());
+        response.operation_succeeded_ = false;
+        return response;
+    }
+#endif
     catch (...)
     {
-        SAFE_LOG(PDO_LOG_ERROR,
-                 "unknown exception while processing update request");
+        SAFE_LOG(PDO_LOG_ERROR, "unknown exception while processing update request");
 
         ByteArray error_state(0);
         std::map<string, string> dependencies;

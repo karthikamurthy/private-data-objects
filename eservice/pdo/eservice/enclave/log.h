@@ -17,8 +17,8 @@
 
 #include "pdo_error.h"
 
-namespace pdo {
-
+namespace pdo
+{
     void SetLogFunction(
         pdo_log_t logFunction
         );
