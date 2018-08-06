@@ -18,10 +18,12 @@
 #include <Python.h>
 #include <string>
 
-#include "contract.h"
-#include "enclave_info.h"
 #include "signup_info.h"
+#include "enclave_info.h"
+#include "contract.h"
 
 void InitializePDOEnclaveModule();
 
-void _SetLogger(PyObject*);
+void _SetLogger(
+    PyObject*
+    );

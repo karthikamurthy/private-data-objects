@@ -72,7 +72,7 @@ def send_to_contract(state, save_file, enclave, message, quiet=False, wait=False
     data_directory = state.get(['Contract', 'DataDirectory'])
     ledger_config = state.get(['Sawtooth'])
 
-    if commit :
+    if update_response.state_changed and commit :
         try :
             logger.debug("send update to the ledger")
             extraparams = {}
@@ -82,8 +82,11 @@ def send_to_contract(state, save_file, enclave, message, quiet=False, wait=False
         except Exception as e :
             raise Exception('failed to save the new state; {0}'.format(str(e)))
 
-        contract.set_state(update_response.encrypted_state)
-        contract.contract_state.save_to_cache(data_dir = data_directory)
+        try :
+            contract.set_state(update_response.encrypted_state)
+            contract.contract_state.save_to_cache(data_dir = data_directory)
+        except Exception as e :
+            logger.exception('BAD RESPONSE: %s, %s', update_response.status, update_response.result)
 
     return update_response.result
 

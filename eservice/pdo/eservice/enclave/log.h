@@ -17,14 +17,16 @@
 
 #include "pdo_error.h"
 
-namespace pdo
-{
+namespace pdo {
+
     void SetLogFunction(
         pdo_log_t logFunction
         );
+
     void Log(
         pdo_log_level_t logLevel,
         const char* message,
         ...);
 
+    uint64_t GetTimer();
 } // namespace pdo

@@ -13,17 +13,19 @@
  * limitations under the License.
  */
 
-#include <map>
 #include <string>
+#include <map>
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 std::map<std::string, std::string> contract_verify_secrets(
     const std::string& sealedSignupData, /* base64 encoded string */
     const std::string& contractId,
-    const std::string& contractCreatorId,     /* contract creators verifying key */
+    const std::string& contractCreatorId, /* contract creators verifying key */
     const std::string& serializedSecretList); /* json */
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-std::string contract_handle_contract_request(const std::string& sealedSignupData,
+std::string contract_handle_contract_request(
+    const std::string& sealedSignupData,
     const std::string& encryptedSessionKey,
-    const std::string& serializedRequest);
+    const std::string& serializedRequest
+    );

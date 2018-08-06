@@ -16,16 +16,21 @@
 
 (define-class key-store
   (instance-vars
-   (store (hashtab-package::make-hash-table 347)))
+   (table-size 347)
+   (store #f))
   (class-vars
    (_ht-set_ (hashtab-package::associator string=?))
    (_ht-get_ (hashtab-package::inquirer string=?))
    (_ht-del_ (hashtab-package::remover string=?))))
 
+(define-method key-store (initialize-instance . args)
+  (if (not store)
+      (instance-set! self 'store (hashtab-package::make-hash-table table-size))))
+
 ;; -----------------------------------------------------------------
 ;; Methods to interogate the store
 ;; -----------------------------------------------------------------
-(define-method key-store (get-state)
+(define-const-method key-store (get-state)
   (let ((result '()))
     (hashtab-package::hash-for-each
      (lambda (key value) (set! result (cons (list key (send value 'externalize 'full)) result)))
@@ -43,7 +48,7 @@
 
 (define-method key-store (exists? key)
   (let ((value (_ht-get_ store key)))
-    (instance? value)))
+    value))
 
 (define-method key-store (get key)
   (let ((value (_ht-get_ store key)))

@@ -63,25 +63,25 @@ yell --------------- CONFIG AND ENVIRONMENT CHECK ---------------
 : "${SGX_SSL?Missing environment variable SGX_SSL}"
 : "${SGX_SDK?Missing environment variable SGXSDKInstallPath}"
 : "${SGX_MODE:?Missing environment variable SGX_MODE, set it to HW or SIM}"
-: "${SGX_DEBUG:?Missing environment variable SGX_DEBUG, set it to 1}"
 : "${PKG_CONFIG_PATH?Missing environment variable PKG_CONFIG_PATH}"
 
 try command -v python
 PY3_VERSION=$(python --version | sed 's/Python 3\.\([0-9]\).*/\1/')
-if [[ $PY3_VERSION -lt 5 ]]; then
-    die must use python3, activate virtualenv first
+if [[ "$PY3_VERSION" -lt 5 ]]; then
+    die "must use python3, activate virtualenv first"
 fi
 
 try command -v openssl
-OPENSSL_VERSION=$(openssl version -v | sed 's/.*Library: OpenSSL \([^ ]*\) .*/\1/')
-if [ $OPENSSL_VERSION != '1.1.0h' ]; then
-   die incorrect version of openssl $(OPENSSL_VERSION) expecting 1.1.0.h
+OPENSSL_VERSION=$(openssl version -v | sed 's/.*OpenSSL \([^ ]*\) .*/\1/')
+if [ "$OPENSSL_VERSION " != '1.1.0h ' ]; then
+   echo 'WARNING: Openssl version is $OPENSSL_VERSION expecting 1.1.0h' >&2
+   echo 'Note: openssl can be a different version as long as libssl and libssl-dev are 1.1.0h' >&2
 fi
 
 try command -v protoc
 PROTOC_VERSION=$(protoc --version | sed 's/libprotoc \([0-9]\).*/\1/')
-if [[ $PROTOC_VERSION -lt 3 ]]; then
-    echo protoc must be version3 or higher
+if [[ "$PROTOC_VERSION" -lt 3 ]]; then
+    echo "protoc must be version3 or higher" >&2
 fi
 
 try command -v cmake
@@ -94,6 +94,13 @@ if [ ! -d "${CONTRACTHOME}" ]; then
     die CONTRACTHOME directory does not exist
 fi
 
+# Automatically determine how many cores the host system has
+# (for use with multi-threaded make)
+NUM_CORES=$(grep -c '^processor' /proc/cpuinfo)
+if [ "$NUM_CORES " == " " ]; then
+    NUM_CORES=4
+fi
+
 # -----------------------------------------------------------------
 # BUILD
 # -----------------------------------------------------------------
@@ -104,34 +111,34 @@ rm -rf build
 mkdir build
 cd build
 try cmake ..
-try make
+try make "-j$NUM_CORES"
 
 yell --------------- PYTHON ---------------
 cd $SRCDIR/python
 make clean
-try make
+try make "-j$NUM_CORES"
 try make install
 
 yell --------------- ESERVICE ---------------
 cd $SRCDIR/eservice
 make clean
-try make
+try make "-j$NUM_CORES"
 try make install
 
 yell --------------- PSERVICE ---------------
 cd $SRCDIR/pservice
 make clean
-try make
+try make "-j$NUM_CORES"
 try make install
 
 yell --------------- CLIENT ---------------
 cd $SRCDIR/client
 make clean
-try make
+try make "-j$NUM_CORES"
 try make install
 
 yell --------------- CONTRACTS ---------------
 cd $SRCDIR/contracts
 make clean
-try make all
+try make all "-j$NUM_CORES"
 try make install

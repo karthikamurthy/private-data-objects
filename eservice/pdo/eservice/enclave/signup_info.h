@@ -29,7 +29,10 @@ class SignupInfo
 public:
     friend SignupInfo* deserialize_signup_info(const std::string& s);
 
-    std::string serialize() const { return serialized_; }
+    std::string serialize() const
+    {
+        return serialized_;
+    }
 
     // Signup info properties
     std::string verifying_key;
@@ -39,9 +42,13 @@ public:
     std::string enclave_persistent_id;
 
 protected:
-    pdo_err_t DeserializeSignupInfo(const std::string& serialized_signup_info);
+    pdo_err_t DeserializeSignupInfo(
+        const std::string& serialized_signup_info
+        );
 
-    SignupInfo(const std::string& serializedSignupInfo);
+    SignupInfo(
+        const std::string& serializedSignupInfo
+        );
 
 private:
     /*
@@ -49,11 +56,16 @@ private:
     canonical representation of the signup info.
     */
     std::string serialized_;
-};  // class SignupInfo
+}; // class SignupInfo
 
-SignupInfo* deserialize_signup_info(const std::string& serialized_signup_info);
+SignupInfo* deserialize_signup_info(
+    const std::string& serialized_signup_info
+    );
 
 std::map<std::string, std::string> create_enclave_data(
-    const std::string& originator_public_key_hash);
+    const std::string& originator_public_key_hash
+    );
 
-std::map<std::string, std::string> unseal_enclave_data(const std::string& sealed_enclave_data);
+std::map<std::string, std::string> unseal_enclave_data(
+    const std::string& sealed_enclave_data
+    );

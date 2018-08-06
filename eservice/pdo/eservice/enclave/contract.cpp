@@ -14,8 +14,8 @@
  */
 
 #include <stdlib.h>
-#include <map>
 #include <string>
+#include <map>
 
 #include "error.h"
 #include "pdo_error.h"
@@ -28,16 +28,22 @@
 #include "enclave/contract.h"
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-std::map<std::string, std::string> contract_verify_secrets(const std::string& sealed_signup_data,
+std::map<std::string, std::string> contract_verify_secrets(
+    const std::string& sealed_signup_data,
     const std::string& contract_id,
     const std::string& contract_creator_id,
-    const std::string& serialized_secret_list)
+    const std::string& serialized_secret_list
+    )
 {
     Base64EncodedString encrypted_contract_key_buffer;
     Base64EncodedString signature_buffer;
 
-    pdo_err_t presult = pdo::enclave_api::contract::VerifySecrets(sealed_signup_data, contract_id,
-        contract_creator_id, serialized_secret_list, encrypted_contract_key_buffer,
+    pdo_err_t presult = pdo::enclave_api::contract::VerifySecrets(
+        sealed_signup_data,
+        contract_id,
+        contract_creator_id,
+        serialized_secret_list,
+        encrypted_contract_key_buffer,
         signature_buffer);
     ThrowPDOError(presult);
 
@@ -49,22 +55,31 @@ std::map<std::string, std::string> contract_verify_secrets(const std::string& se
 }
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-std::string contract_handle_contract_request(const std::string& sealed_signup_data,
+std::string contract_handle_contract_request(
+    const std::string& sealed_signup_data,
     const std::string& encrypted_session_key,
-    const std::string& serialized_request)
+    const std::string& serialized_request
+    )
 {
     pdo_err_t presult;
 
     uint32_t response_identifier;
     size_t response_size;
 
-    presult = pdo::enclave_api::contract::HandleContractRequest(sealed_signup_data,
-        encrypted_session_key, serialized_request, response_identifier, response_size);
+    presult = pdo::enclave_api::contract::HandleContractRequest(
+        sealed_signup_data,
+        encrypted_session_key,
+        serialized_request,
+        response_identifier,
+        response_size);
     ThrowPDOError(presult);
 
     Base64EncodedString response;
     presult = pdo::enclave_api::contract::GetSerializedResponse(
-        sealed_signup_data, response_identifier, response_size, response);
+        sealed_signup_data,
+        response_identifier,
+        response_size,
+        response);
     ThrowPDOError(presult);
 
     return response;
