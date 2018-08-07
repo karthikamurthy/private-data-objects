@@ -189,6 +189,11 @@ bool IntKeyCppContractExecuter::GetResult(char* buf, int bufSize)
     return true;
 }
 
+void HandleFailure(cosnt char* msg)
+{
+    throw IntKeyCppContractException(msg);
+}
+
 const char* StrToUint(const char* strPtr, unsigned int* ptrVal, const char* terminators)
 {
     *ptrVal = 0;

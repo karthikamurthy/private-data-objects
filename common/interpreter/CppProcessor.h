@@ -5,10 +5,11 @@
 
 //#include "cpp_intkey_processor/IntKeyCppContractExecuter.h"
 #include "ContractInterpreter.h"
+#include "cpp_processor/CppProcessorHandler.h"
 
 namespace pc = pdo::contracts;
 
-typedef pc::ContractInterpreter* (*contract_factory)();
+typedef CppContractWrapper* (*contract_factory)();
 
 struct ContractDispatchTableEntry
 {

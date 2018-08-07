@@ -2,31 +2,49 @@
 
 #include <map>
 #include <string>
-using namespace std;
-#include "ContractInterpreter.h"
-#include "CppProcessor.h"
-#include "IntKeyCppContractExecuter.h"
-namespace pc = pdo::contracts;
+#include <memory>
+//using namespace std;
+//#include "ContractInterpreter.h"
+//#include "CppProcessor.h"
+//#include "CppContractExecuter.h"
+//namespace pc = pdo::contracts;
 
-pdo::contracts::ContractInterpreter* intkey_factory();
+#define MIN_RESULT_BUFFER_SIZE (100)
+#define MIN_STATE_BUFFER_SIZE (13)
 
-class IntKeyCppContractWrapperException : public std::exception
+class CppContractWrapper; // Forward decleration
+
+CppContractWrapper* intkey_factory();
+CppContractWrapper* echo_factory();
+
+class CppContractWrapperException : public std::exception
 {
 public:
-    IntKeyCppContractWrapperException(const char* msg) : msg_(msg) {}
+    CppContractWrapperException(const char* msg) : msg_(msg) {}
     virtual char const* what() const noexcept { return msg_.c_str(); }
 
-private:
+protected:
     std::string msg_;
 };
 
-class IntKeyCppContractWrapper : public pc::ContractInterpreter
+class CppContractWrapper
 {
 public:
-    IntKeyCppContractWrapper(void);
-    ~IntKeyCppContractWrapper(void);
+    CppContractWrapper(){}
 
-    virtual void create_initial_contract_state(const std::string& inContractID,
+    virtual bool SetCode(const char* codeStr) = 0;
+    virtual bool SetMessage(const char* messageStr, const char* originatorId) = 0;
+    virtual bool SetInState(const char* stateStr) = 0;
+    virtual bool ExecuteMessage(const char* contractId, const char* creatorId) = 0;
+    virtual bool GetResult(char* buf, int bufSize) = 0;
+    virtual bool GetOutState(char* buf, int bufSize) = 0;
+    virtual void HandleFailure(const char* msg);
+
+    virtual ~CppContractWrapper() {
+    }
+
+
+    /*virtual void create_initial_contract_state(const std::string& inContractID,
         const std::string& inCreatorID,
         const pc::ContractCode& inContract,
         const pc::ContractMessage& inMessage,
@@ -40,12 +58,5 @@ public:
         pc::ContractState& outContractState,
         std::map<std::string, std::string>& outDependencies,
         std::string& outMessageResult);
-
-private:
-    void HandleFailure();
-    bool HandleFailure_Code();
-    bool HandleFailure_Message();
-    bool HandleFailure_State();
-    IntKeyCppContractExecuter executer;
-
+        */
 };
