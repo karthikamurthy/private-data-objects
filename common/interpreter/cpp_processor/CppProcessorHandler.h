@@ -9,22 +9,23 @@ using namespace std;
 namespace pc = pdo::contracts;
 
 pdo::contracts::ContractInterpreter* intkey_factory();
+pdo::contracts::ContractInterpreter* echo_factory();
 
-class IntKeyCppContractWrapperException : public std::exception
+class CppContractWrapperException : public std::exception
 {
 public:
-    IntKeyCppContractWrapperException(const char* msg) : msg_(msg) {}
+    CppContractWrapperException(const char* msg) : msg_(msg) {}
     virtual char const* what() const noexcept { return msg_.c_str(); }
 
 private:
     std::string msg_;
 };
 
-class IntKeyCppContractWrapper : public pc::ContractInterpreter
+class CppContractWrapper : public pc::ContractInterpreter
 {
 public:
-    IntKeyCppContractWrapper(void);
-    ~IntKeyCppContractWrapper(void);
+    CppContractWrapper(void);
+    ~CppContractWrapper(void);
 
     virtual void create_initial_contract_state(const std::string& inContractID,
         const std::string& inCreatorID,

@@ -1,4 +1,4 @@
-#include "CppProcessorHandler.h"
+10.223.155.119#include "CppProcessorHandler.h"
 #include <stdio.h>
 #include <stdlib.h>
 extern "C" {
@@ -7,31 +7,35 @@ void printf(const char* fmt, ...);
 
 pdo::contracts::ContractInterpreter* intkey_factory()
 {
-    return new IntKeyCppContractWrapper();
+   return new CppContractWrapper;
+}
+pdo::contracts::ContractInterpreter* echo_factory(){
+
 }
 
-IntKeyCppContractWrapper::IntKeyCppContractWrapper() {}
+CppContractWrapper::CppContractWrapper() 
+{}
 
-IntKeyCppContractWrapper::~IntKeyCppContractWrapper() {}
+CppContractWrapper::~CppContractWrapper() {}
 
-void IntKeyCppContractWrapper::create_initial_contract_state(const std::string& inContractID,
+void CppContractWrapper::create_initial_contract_state(const std::string& inContractID,
     const std::string& inCreatorID,
     const pc::ContractCode& inContract,
     const pc::ContractMessage& inMessage,
     pc::ContractState& outContractState)
 {
     if (!executer.SetCode(inContract.Code.c_str()))
-        throw IntKeyCppContractWrapperException(
+        throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::inContract Code");
 
     if (!executer.SetMessage(inMessage.Message.c_str(), inMessage.OriginatorID.c_str()))
     {
-        throw IntKeyCppContractWrapperException("Action Failed inside Intkey Wrapper::SetMessage");
+        throw CppContractWrapperException("Action Failed inside Intkey Wrapper::SetMessage");
     }
 
     if (!executer.ExecuteMessage(inContractID.c_str(), inCreatorID.c_str()))
     {
-        throw IntKeyCppContractWrapperException(
+        throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::ExecuteMessgae");
     }
 
@@ -46,12 +50,12 @@ void IntKeyCppContractWrapper::create_initial_contract_state(const std::string& 
     }
     catch (...)
     {
-        throw IntKeyCppContractWrapperException(
+        throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::Getoutof state");
     }
 }
 
-void IntKeyCppContractWrapper::send_message_to_contract(const std::string& inContractID,
+void CppContractWrapper::send_message_to_contract(const std::string& inContractID,
     const std::string& inCreatorID,
     const pc::ContractCode& inContract,
     const pc::ContractMessage& inMessage,
@@ -62,21 +66,21 @@ void IntKeyCppContractWrapper::send_message_to_contract(const std::string& inCon
 {
     bool result = true;
     if (!executer.SetCode(inContract.Code.c_str()))
-        throw IntKeyCppContractWrapperException(
+        throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::inContract Code");
 
     if (!executer.SetMessage(inMessage.Message.c_str(), inMessage.OriginatorID.c_str()))
     {
-        throw IntKeyCppContractWrapperException("Action Failed inside Intkey Wrapper::SetMessage");
+        throw CppContractWrapperException("Action Failed inside Intkey Wrapper::SetMessage");
     }
 
     if (!(executer.SetInState(inContractState.State.c_str())))
     {
-        throw IntKeyCppContractWrapperException("Action Failed inside Intkey Wrapper::SetInState");
+        throw CppContractWrapperException("Action Failed inside Intkey Wrapper::SetInState");
     }
     if (!executer.ExecuteMessage(inContractID.c_str(), inCreatorID.c_str()))
     {
-        throw IntKeyCppContractWrapperException(
+        throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::ExecuteMessgae");
     }
 
@@ -102,7 +106,7 @@ void IntKeyCppContractWrapper::send_message_to_contract(const std::string& inCon
     }
     catch (...)
     {
-        throw IntKeyCppContractWrapperException(
+        throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::Getoutof state");
     }
 
@@ -110,34 +114,34 @@ void IntKeyCppContractWrapper::send_message_to_contract(const std::string& inCon
         HandleFailure();
 }
 
-void IntKeyCppContractWrapper::HandleFailure()
+void CppContractWrapper::HandleFailure()
 {
     // TODO: Through a proper exception defined by the PDO
     // Initially any exception should work
 
-    throw IntKeyCppContractWrapperException("Action Failed inside Intkey Wrapper");
+    throw CppContractWrapperException("Action Failed inside Intkey Wrapper");
 }
-bool IntKeyCppContractWrapper::HandleFailure_Code()
+bool CppContractWrapper::HandleFailure_Code()
 {
     // TODO: Through a proper exception defined by the PDO
     // Initially any exception should work
 
-    throw IntKeyCppContractWrapperException("Code seeting Failed");
+    throw CppContractWrapperException("Code seeting Failed");
     return false;
 }
-bool IntKeyCppContractWrapper::HandleFailure_Message()
+bool CppContractWrapper::HandleFailure_Message()
 {
     // TODO: Through a proper exception defined by the PDO
     // Initially any exception should work
 
-    throw IntKeyCppContractWrapperException("Message setting Failed");
+    throw CppContractWrapperException("Message setting Failed");
     return false;
 }
-bool IntKeyCppContractWrapper::HandleFailure_State()
+bool CppContractWrapper::HandleFailure_State()
 {
     // TODO: Through a proper exception defined by the PDO
     // Initially any exception should work
 
-    throw IntKeyCppContractWrapperException("State setting failed Failed");
+    throw CppContractWrapperException("State setting failed Failed");
     return false;
 }
