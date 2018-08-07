@@ -32,7 +32,7 @@
 #include "enclave_utils.h"
 #include "interpreter/ContractInterpreter.h"
 #include "interpreter/CppProcessor.h"
-#ifdef INTKEY_CPP_CONTRACT_TEST
+#ifdef CPP_CONTRACT_TEST
 #include "interpreter/cpp_processor/CppProcessorHandler.h"
 #else
 #include "interpreter/gipsy_scheme/GipsyInterpreter.h"
@@ -146,11 +146,11 @@ ContractResponse ContractRequest::process_initialization_request(void)
     // the only reason for the try/catch here is to provide some logging for the error
     try
     {
-#ifdef INTKEY_CPP_CONTRACT_TEST
-        CppProcessor interpreter;
-#else
-        GipsyInterpreter interpreter;
-#endif
+        #ifdef CPP_CONTRACT_TEST
+            CppProcessor interpreter;
+        #else
+            GipsyInterpreter interpreter;
+        #endif
 
         pdo::contracts::ContractCode code;
         code.Code = contract_code_.code_;
@@ -194,8 +194,8 @@ ContractResponse ContractRequest::process_initialization_request(void)
         response.operation_succeeded_ = false;
         return response;
     }
-#ifdef INTKEY_CPP_CONTRACT_TEST
-    catch (IntKeyCppContractWrapperException& e)
+    #ifdef CPP_CONTRACT_TEST
+    catch (CppContractWrapperException& e)
     {
         SAFE_LOG(PDO_LOG_ERROR, "failed inside IntkeyContractWrapper %s: %s",
             contract_code_.name_.c_str(), e.what());
@@ -206,7 +206,7 @@ ContractResponse ContractRequest::process_initialization_request(void)
         response.operation_succeeded_ = false;
         return response;
     }
-#endif
+    #endif
     catch (...)
     {
         SAFE_LOG(PDO_LOG_ERROR, "unknown exception while processing initialization request");
@@ -234,11 +234,11 @@ ContractResponse ContractRequest::process_update_request(void)
     // the only reason for the try/catch here is to provide some logging for the error
     try
     {
-#ifdef INTKEY_CPP_CONTRACT_TEST
-        CppProcessor interpreter;
-#else
-        GipsyInterpreter interpreter;
-#endif
+        #ifdef CPP_CONTRACT_TEST
+            CppProcessor interpreter;
+        #else
+            GipsyInterpreter interpreter;
+        #endif
 
         pdo::contracts::ContractCode code;
         code.Code = contract_code_.code_;
@@ -299,8 +299,8 @@ ContractResponse ContractRequest::process_update_request(void)
         response.operation_succeeded_ = false;
         return response;
     }
-#ifdef INTKEY_CPP_CONTRACT_TEST
-    catch (IntKeyCppContractWrapperException& e)
+    #ifdef CPP_CONTRACT_TEST
+    catch (CppContractWrapperException& e)
     {
         SAFE_LOG(PDO_LOG_ERROR, "failed inside IntkeyContractWrapper %s: %s",
             contract_code_.name_.c_str(), e.what());
@@ -311,7 +311,7 @@ ContractResponse ContractRequest::process_update_request(void)
         response.operation_succeeded_ = false;
         return response;
     }
-#endif
+    #endif
     catch (...)
     {
         SAFE_LOG(PDO_LOG_ERROR, "unknown exception while processing update request");

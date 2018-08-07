@@ -57,7 +57,7 @@ _epid_group = None
 # ----------------------------------------------------------------
 def __find_enclave_library(config) :
     enclave_type = pdo_code.__enclave_type__
-    if  enclave_type is "intkey" :
+    if  enclave_type is "cpp_processor" :
         enclave_file_name = config.get('enclave_library', 'libpdo-enclave_intkey.signed.so')
     else :
         enclave_file_name = config.get('enclave_library', 'libpdo-enclave.signed.so')
