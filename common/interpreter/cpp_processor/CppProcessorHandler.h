@@ -43,7 +43,6 @@ public:
     virtual ~CppContractWrapper() {
     }
 
-
     /*virtual void create_initial_contract_state(const std::string& inContractID,
         const std::string& inCreatorID,
         const pc::ContractCode& inContract,

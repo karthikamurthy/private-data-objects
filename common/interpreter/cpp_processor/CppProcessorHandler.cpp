@@ -23,6 +23,7 @@ CppContractWrapper* echo_factory(){
     const pc::ContractMessage& inMessage,
     pc::ContractState& outContractState)
 {
+
     if (!executer->SetCode(inContract.Code.c_str()))
         throw CppContractWrapperException(
             "Action Failed inside Intkey Wrapper::inContract Code");
@@ -112,6 +113,7 @@ void CppContractWrapper::send_message_to_contract(const std::string& inContractI
     if (!result)
         HandleFailure();
 
+
 }
 
 void CppContractWrapper::HandleFailure()
@@ -119,5 +121,7 @@ void CppContractWrapper::HandleFailure()
     // TODO: Through a proper exception defined by the PDO
     // Initially any exception should work
 
+
     throw CppContractWrapperException("Action Failed inside Intkey Wrapper");
 }*/
+
