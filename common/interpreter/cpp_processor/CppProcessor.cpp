@@ -7,17 +7,18 @@ extern "C" {
 void printf(const char* fmt, ...);
 }
 
-ContractDispatchTableEntry* LookUpContract(std::string contract_code)
+CppContractWrapper* LookUpContract(std::string contract_code)
 {
-    for (int i = 0; contractDispatchTable[i].project_name != NULL; i++)
+    for (int i = 0; contractDispatchTable[i].contract_id != NULL; i++)
     {
-        int l = strlen(contractDispatchTable[i].project_name);
-        if (contract_code.compare(contractDispatchTable[i].project_name) == 0)
+        int l = strlen(contractDispatchTable[i].contract_id);
+        if (contract_code.compare(contractDispatchTable[i].contract_id) == 0)
         {
-            return &contractDispatchTable[i];
+            return contractDispatchTable[i].contract_factory_ptr();
         }
     }
-    // if we are here, the contract is not found -> throw an exception
+
+    return nullptr;
 }
 
 CppProcessor::CppProcessor() {}
@@ -33,7 +34,11 @@ void CppProcessor::create_initial_contract_state(const std::string& inContractID
     std::string contractCode = inContract.Code.c_str();
     std::size_t pos = contractCode.find(':');
     std::string enclave_type = contractCode.substr(pos + 1);
-    CppContractWrapper* executer = LookUpContract(enclave_type)->contract_factory_ptr();
+    CppContractWrapper* executer = LookUpContract(enclave_type);
+
+    //TODO Handle error case
+    if(!executer)
+        return;
 
     if (!executer->SetCode(inContract.Code.c_str()))
          executer->HandleFailure("Set contract code");
@@ -72,7 +77,11 @@ void CppProcessor::send_message_to_contract(const std::string& inContractID,
     std::map<std::string, std::string>& outDependencies,
     std::string& outMessageResult)
 {
-    CppContractWrapper* executer = LookUpContract(inContract.Code.c_str())->contract_factory_ptr();
+    CppContractWrapper* executer = LookUpContract(inContract.Code.c_str());
+
+    //TODO: handle error case
+    if(!executer)
+        return;
 
     bool result = true;
     if (!executer->SetCode(inContract.Code.c_str()))

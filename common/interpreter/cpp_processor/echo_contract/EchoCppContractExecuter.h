@@ -1,14 +1,4 @@
 #pragma once
-#define STUB_INTERPRETOR_NO_ERROR (0)
-#define STUB_INTERPRETOR_ERR (1)
-#define STUB_INTERPRETOR_ERR_CODE (2)
-#define STUB_INTERPRETOR_ERR_MESSAGE (3)
-#define STUB_INTERPRETOR_ERR_STATE (4)
-#define STUB_INTERPRETOR_ERR_PARAM (5)
-#define STUB_INTERPRETOR_ERR_TERMINATED (6)
-#define STUB_INTERPRETOR_ERR_RESULT (7)
-#define STUB_INTERPRETOR_ERR_STRING_NULL (8)
-#define STUB_INTERPRETOR_ERR_STRING_TO_INT (9)
 
 #ifndef NULL
 #define NULL (0)
@@ -69,14 +59,16 @@ class EchoCppContractExecuter : public CppContractWrapper
 public:
     EchoCppContractExecuter() { result = STUB_INTERPRETOR_NO_ERROR; };
 
-    bool SetCode(const char* codeStr)
+    ~EchoCppContractExecuter() {}
+
+    bool SetCode(const char* codeStr) override
     {
         if (result == STUB_INTERPRETOR_NO_ERROR)
             result = code.Init(codeStr);
         return (result == STUB_INTERPRETOR_NO_ERROR);
     };
 
-    bool SetMessage(const char* messageStr, const char* originatorId)
+    bool SetMessage(const char* messageStr, const char* originatorId) override
     {
         // TODO: originatorId is not used
         if (result == STUB_INTERPRETOR_NO_ERROR)
@@ -84,7 +76,7 @@ public:
         return (result == STUB_INTERPRETOR_NO_ERROR);
     };
 
-    bool SetInState(const char* stateStr)
+    bool SetInState(const char* stateStr) override
     {
         if (result == STUB_INTERPRETOR_NO_ERROR)
             result = state.Init(stateStr);
@@ -92,16 +84,16 @@ public:
         return (result == STUB_INTERPRETOR_NO_ERROR);
     };
 
-    bool ExecuteMessage(const char* contractId, const char* creatorId);
+    bool ExecuteMessage(const char* contractId, const char* creatorId) override;
 
-    bool GetResult(char* buf, int bufSize);
+    bool GetResult(char* buf, int bufSize) override;
 
-    bool GetOutState(char* buf, int bufSize)
+    bool GetOutState(char* buf, int bufSize) override
     {
         return (state.Serialize(buf, bufSize) == STUB_INTERPRETOR_NO_ERROR);
     }
 
-    void HandleFailure(const char* msg);
+    void HandleFailure(const char* msg) override;
 
     // TODO: GetDependencies()
 

@@ -11,10 +11,9 @@ typedef CppContractWrapper* (*contract_factory)();
 
 struct ContractDispatchTableEntry
 {
-    const char* project_name;
+    const char* contract_id;
     contract_factory contract_factory_ptr;
 };
-
 
 class CppProcessor : public pc::ContractInterpreter
 {

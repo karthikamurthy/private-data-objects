@@ -7,24 +7,12 @@ static int StrLen(char* str);
 static char* StrCpy(const char* src, char* dst, int size);
 static char* UintToStr(unsigned int value, char* buf, int size);
 static const char* StrToUint(
-    const char* strPtr, unsigned int* ptrVal, const char* terminators = ",");
+const char* strPtr, unsigned int* ptrVal, const char* terminators = ",");
 
-struct ErrorInfo
+CppContractWrapper* echo_factory()
 {
-    int code;
-    const char* message;
-};
-
-ErrorInfo errorInfo[] = {{STUB_INTERPRETOR_NO_ERROR, "OK"},
-    {STUB_INTERPRETOR_ERR, "ERROR: Unknown error"},
-    {STUB_INTERPRETOR_ERR_CODE, "ERROR: Invalid Contract Code"},
-    {STUB_INTERPRETOR_ERR_MESSAGE, "ERROR: Invalid Contract Message"},
-    {STUB_INTERPRETOR_ERR_STATE, "ERROR: Invalid Contract State"},
-    {STUB_INTERPRETOR_ERR_PARAM, "ERROR: Invalid Contract Parameter"},
-    {STUB_INTERPRETOR_ERR_TERMINATED, "ERROR: Contract Termonated"},
-    {STUB_INTERPRETOR_ERR_RESULT, "ERROR: Invalid Result Buffer"},
-    {STUB_INTERPRETOR_ERR_STRING_NULL, "ERROR: Codeinit String is NULL"},
-    {STUB_INTERPRETOR_ERR_STRING_TO_INT, "ERROR: Codeinit String to Int"}, {0, NULL}};
+    return new EchoCppContractExecuter();
+}
 
 int EchoCode::Init(const char* str)
 {
