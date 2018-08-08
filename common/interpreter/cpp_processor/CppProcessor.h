@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include "ContractInterpreter.h"
-#include "cpp_processor/CppProcessorHandler.h"
+#include "CppProcessorHandler.h"
 
 namespace pc = pdo::contracts;
 
@@ -15,7 +15,6 @@ struct ContractDispatchTableEntry
     contract_factory contract_factory_ptr;
 };
 
-//extern ContractDispatchTableEntry contractDisptachTable[];
 
 class CppProcessor : public pc::ContractInterpreter
 {

@@ -30,7 +30,7 @@ SET (LIBPDO_ENCLAVE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 
 INCLUDE_DIRECTORIES(/opt/intel/sgxssl/include ${PDO_TOP_DIR}/common ${PDO_TOP_DIR}/common/crypto ${PDO_TOP_DIR}/common/packages/parson)
 INCLUDE_DIRECTORIES(${PDO_TOP_DIR}/common/interpreter ../libpoet_shared)
-#INCLUDE_DIRECTORIES(${PDO_TOP_DIR}/common/packages/tinyscheme )
+
 # If are compiling for Linux, then we have special linking for the trusted
 # runtime service
 IF(${SGX_USE_SIMULATOR})
@@ -109,9 +109,8 @@ SGX_SIGN_ENCLAVE(${PROJECT_NAME} ${PDO_ENCLAVE_PEM} ${PROJECT_CONFIG})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--whole-archive -lsgx_tsgxssl -Wl,--no-whole-archive)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--whole-archive -l${TRTS_LIBRARY_NAME} -Wl,--no-whole-archive)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -ltpdo-common -lpdo_contracts -lsgx_tsgxssl -lsgx_tsgxssl_crypto -lsgx_tstdc -lsgx_tcxx -lsgx_tcrypto -lsgx_tkey_exchange -l${SERVICE_LIBRARY_NAME} -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -ltpdo-common -lpdo_contracts -lsgx_tsgxssl -lgipsy -ltinyscheme -lsgx_tsgxssl_crypto -lsgx_tstdc -lsgx_tcxx -lsgx_tcrypto -lsgx_tkey_exchange -l${SERVICE_LIBRARY_NAME} -Wl,--end-group)
 INCLUDE_DIRECTORIES(${PDO_TOP_DIR}/common/interpreter)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -ltinyscheme -lgipsy   -Wl,--end-group)
 
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE ${PDO_TOP_DIR}/common/packages/tinyscheme )
 
@@ -134,7 +133,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--whole-archive -l${TRTS_LIBRARY_NAME}
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -lcpp_processor -ltpdo-common -lpdo_contracts -lsgx_tsgxssl -lsgx_tsgxssl_crypto -lsgx_tstdc -lsgx_tcxx -lsgx_tcrypto -lsgx_tkey_exchange -l${SERVICE_LIBRARY_NAME} -Wl,--end-group)
 INCLUDE_DIRECTORIES(${PDO_TOP_DIR}/common/interpreter)
-#TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -lcpp_processor   -Wl,--end-group)
 
 TARGET_COMPILE_DEFINITIONS(${PROJECT_NAME} PRIVATE "-DCPP_CONTRACT_TEST" )
 TARGET_INCLUDE_DIRECTORIES( ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${SGX_ENCLAVE_INCLUDE})

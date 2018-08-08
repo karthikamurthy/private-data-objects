@@ -17,14 +17,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.2 FATAL_ERROR)
 # Common components for both trusted and untrusted common libraries
 ################################################################################
 
-FILE(GLOB PROJECT_HEADERS "*.h")
-FILE(GLOB PROJECT_SOURCES "*.cpp")
-FILE(GLOB PROJECT_HEADERS "./intkey_contract/*.h" "./echo_contract/*.h")
-FILE(GLOB PROJECT_SOURCES "./intkey_contract/*.cpp" "./echo_contract/*.cpp")
+FILE(GLOB PROJECT_HEADERS "*.h" "./intkey_contract/*.h" "./echo_contract/*.h")
+FILE(GLOB PROJECT_SOURCES "*.cpp" "./intkey_contract/*.cpp" "./echo_contract/*.cpp")
 
 FILE(GLOB HEADERS "./*.h")
 FILE(GLOB SOURCES "./*.cpp")
-SET(GENERIC_PRIVATE_INCLUDE_DIRS "." "../../crypto" "..")
+SET(GENERIC_PRIVATE_INCLUDE_DIRS "." "../../crypto" ".." "../..")
 SET(GENERIC_PUBLIC_INCLUDE_DIRS "${SGX_SDK}/include")
 SET(GENERIC_CXX_FLAGS ${DEBUG_FLAGS} "-Wall" "-fPIC" "-Wno-write-strings" "-std=c++11")
 

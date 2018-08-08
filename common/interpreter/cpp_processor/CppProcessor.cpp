@@ -1,8 +1,11 @@
 #include "CppProcessor.h"
+#include "ContractDispatcher.cpp"
 #include <iostream>
 #include <string>
 
-extern ContractDispatchTableEntry contractDispatchTable[];
+extern "C" {
+void printf(const char* fmt, ...);
+}
 
 ContractDispatchTableEntry* LookUpContract(std::string contract_code)
 {
@@ -32,8 +35,6 @@ void CppProcessor::create_initial_contract_state(const std::string& inContractID
     std::string enclave_type = contractCode.substr(pos + 1);
     CppContractWrapper* executer = LookUpContract(enclave_type)->contract_factory_ptr();
 
-    //entry->contract_factory_ptr()->create_initial_contract_state(
-    //    inContractID, inCreatorID, inContract, inMessage, outContractState);
     if (!executer->SetCode(inContract.Code.c_str()))
          executer->HandleFailure("Set contract code");
 
@@ -71,16 +72,11 @@ void CppProcessor::send_message_to_contract(const std::string& inContractID,
     std::map<std::string, std::string>& outDependencies,
     std::string& outMessageResult)
 {
-    //ContractDispatchTableEntry* entry = LookUpContract(inContract.Code.c_str());
-    //entry->contract_factory_ptr()->send_message_to_contract(inContractID, inCreatorID, inContract,
-    //    inMessage, inContractState, outContractState, outDependencies, outMessageResult);
     CppContractWrapper* executer = LookUpContract(inContract.Code.c_str())->contract_factory_ptr();
 
     bool result = true;
     if (!executer->SetCode(inContract.Code.c_str()))
         executer->HandleFailure("Set contract code");
-        //throw CppContractWrapperException(
-        //    "Action Failed inside Intkey Wrapper::inContract Code");
 
     if (!executer->SetMessage(inMessage.Message.c_str(), inMessage.OriginatorID.c_str()))
     {

@@ -33,8 +33,7 @@
 #include "interpreter/ContractInterpreter.h"
 
 #ifdef CPP_CONTRACT_TEST
-#include "interpreter/cpp_processor/CppProcessorHandler.h"
-#include "interpreter/CppProcessor.h"
+#include "interpreter/cpp_processor/CppProcessor.h"
 #else
 #include "interpreter/gipsy_scheme/GipsyInterpreter.h"
 #endif
