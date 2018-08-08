@@ -197,7 +197,7 @@ ContractResponse ContractRequest::process_initialization_request(void)
     #ifdef CPP_CONTRACT_TEST
     catch (CppContractWrapperException& e)
     {
-        SAFE_LOG(PDO_LOG_ERROR, "failed inside IntkeyContractWrapper %s: %s",
+        SAFE_LOG(PDO_LOG_ERROR, "failed inside ContractWrapper %s: %s",
             contract_code_.name_.c_str(), e.what());
 
         ByteArray error_state(0);
@@ -302,7 +302,7 @@ ContractResponse ContractRequest::process_update_request(void)
     #ifdef CPP_CONTRACT_TEST
     catch (CppContractWrapperException& e)
     {
-        SAFE_LOG(PDO_LOG_ERROR, "failed inside IntkeyContractWrapper %s: %s",
+        SAFE_LOG(PDO_LOG_ERROR, "failed inside ContractWrapper %s: %s",
             contract_code_.name_.c_str(), e.what());
 
         ByteArray error_state(0);

@@ -126,7 +126,7 @@ ADD_CUSTOM_COMMAND(
 
 #############################################################################
 SET(CMAKE_SHARED_LIBRARY_PREFIX "")
-PROJECT(libpdo-enclave_intkey C CXX)
+PROJECT(libpdo-enclave_cpp_processor C CXX)
 ADD_LIBRARY(${PROJECT_NAME} SHARED  ${PROJECT_HEADERS} ${PROJECT_SOURCES} ${PROJECT_EDGE_SOURCES} ${PROJECT_EDL})
 SGX_SIGN_ENCLAVE(${PROJECT_NAME} ${PDO_ENCLAVE_PEM} ${PROJECT_CONFIG})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--whole-archive -lsgx_tsgxssl -Wl,--no-whole-archive)
@@ -134,9 +134,9 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--whole-archive -l${TRTS_LIBRARY_NAME}
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -ltpdo-common -lpdo_contracts -lsgx_tsgxssl -lsgx_tsgxssl_crypto -lsgx_tstdc -lsgx_tcxx -lsgx_tcrypto -lsgx_tkey_exchange -l${SERVICE_LIBRARY_NAME} -Wl,--end-group)
 INCLUDE_DIRECTORIES(${PDO_TOP_DIR}/common/interpreter)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -lintkey   -Wl,--end-group)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} -Wl,--start-group -lcpp_processor   -Wl,--end-group)
 
-TARGET_COMPILE_DEFINITIONS(${PROJECT_NAME} PRIVATE "-DINTKEY_CPP_CONTRACT_TEST" )
+TARGET_COMPILE_DEFINITIONS(${PROJECT_NAME} PRIVATE "-DCPP_CONTRACT_TEST" )
 TARGET_INCLUDE_DIRECTORIES( ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${SGX_ENCLAVE_INCLUDE})
 
 ADD_CUSTOM_COMMAND(

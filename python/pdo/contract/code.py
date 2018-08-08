@@ -41,7 +41,7 @@ class ContractCode(object) :
             source_name = name
         #gipsy_enabled = os.environ.get('GIPSY_ENABLED')
         enclave_type = __enclave_type__
-        if  enclave_type is "intkey" :
+        if  enclave_type is "cpp_processor" :
             basename =  putils.build_file_name(source_name, extension='.txt')
         else :
             basename = putils.build_file_name(source_name, extension='.scm')

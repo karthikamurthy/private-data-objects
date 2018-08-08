@@ -58,11 +58,10 @@ _epid_group = None
 def __find_enclave_library(config) :
     enclave_type = pdo_code.__enclave_type__
     if  enclave_type is "cpp_processor" :
-        enclave_file_name = config.get('enclave_library', 'libpdo-enclave_intkey.signed.so')
+        enclave_file_name = config.get('enclave_library', 'libpdo-enclave_cpp_processor.signed.so')
     else :
         enclave_file_name = config.get('enclave_library', 'libpdo-enclave.signed.so')
 
-    #enclave_file_name = config.get('enclave_library', 'libpdo-enclave_intkey.signed.so')
     enclave_file_path = config.get('enclave_library_path')
     if enclave_file_path :
         enclave_file = os.path.join(enclave_file_path, enclave_file_name);
