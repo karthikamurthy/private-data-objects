@@ -108,52 +108,11 @@ bool EchoCppContractExecuter::ExecuteMessage(const char* contractId, const char*
 
     if (result == STUB_INTERPRETOR_NO_ERROR)
     {
-        if (message.action == ACTION_INIT)
-        {
-            if (message.value < code.min || message.value > code.max)
-            {
-                result = STUB_INTERPRETOR_ERR_PARAM;
-            }
-            else
-            {
-                state.value = message.value;
-            }
-        }
-        else if (state.terminated)
+        state.value = message.value;
+
+        if (state.terminated)
         {
             result = STUB_INTERPRETOR_ERR_TERMINATED;
-        }
-        else
-        {
-            switch (message.action)
-            {
-                case ACTION_INC:
-                    if (message.value > (code.max - state.value))
-                    {
-                        result = STUB_INTERPRETOR_ERR_PARAM;
-                    }
-                    else
-                    {
-                        state.value += message.value;
-                    }
-                    break;
-                case ACTION_DEC:
-                    if (message.value > (state.value - code.min))
-                    {
-                        result = STUB_INTERPRETOR_ERR_PARAM;
-                    }
-                    else
-                    {
-                        state.value -= message.value;
-                    }
-                    break;
-                case ACTION_TERMINATE:
-                    state.terminated = 1;
-                    break;
-                default:
-                    result = STUB_INTERPRETOR_ERR_PARAM;
-                    break;
-            }
         }
     }
 
@@ -173,6 +132,11 @@ bool EchoCppContractExecuter::GetResult(char* buf, int bufSize)
     }
 
     return true;
+}
+
+void HandleFailure(const char* msg)
+{
+    throw EchoCppContractException(msg);
 }
 
 const char* StrToUint(const char* strPtr, unsigned int* ptrVal, const char* terminators)

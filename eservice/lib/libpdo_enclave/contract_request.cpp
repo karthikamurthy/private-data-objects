@@ -31,9 +31,10 @@
 
 #include "enclave_utils.h"
 #include "interpreter/ContractInterpreter.h"
-#include "interpreter/CppProcessor.h"
+
 #ifdef CPP_CONTRACT_TEST
 #include "interpreter/cpp_processor/CppProcessorHandler.h"
+#include "interpreter/CppProcessor.h"
 #else
 #include "interpreter/gipsy_scheme/GipsyInterpreter.h"
 #endif

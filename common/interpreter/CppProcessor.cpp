@@ -2,14 +2,16 @@
 #include <iostream>
 #include <string>
 
+extern ContractDispatchTableEntry contractDispatchTable[];
+
 ContractDispatchTableEntry* LookUpContract(std::string contract_code)
 {
-    for (int i = 0; contractDisptachTable[i].project_name != NULL; i++)
+    for (int i = 0; contractDispatchTable[i].project_name != NULL; i++)
     {
-        int l = strlen(contractDisptachTable[i].project_name);
-        if (contract_code.compare(contractDisptachTable[i].project_name) == 0)
+        int l = strlen(contractDispatchTable[i].project_name);
+        if (contract_code.compare(contractDispatchTable[i].project_name) == 0)
         {
-            return &contractDisptachTable[i];
+            return &contractDispatchTable[i];
         }
     }
     // if we are here, the contract is not found -> throw an exception

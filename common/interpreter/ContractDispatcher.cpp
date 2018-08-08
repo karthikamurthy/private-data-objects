@@ -20,7 +20,7 @@
 CppContractWrapper* intkey_factory();
 CppContractWrapper* echo_factory();
 
-ContractDispatchTableEntry contractDisptachTable[] = {
+ContractDispatchTableEntry contractDispatchTable[] = {
 	{"intkey:", intkey_factory},
     { "echo:", echo_factory },
     {NULL, NULL}

@@ -3,6 +3,7 @@
 
 #include "CppProcessorHandler.h"
 #include "intkey_contract/IntKeyCppContractExecuter.h"
+#include "echo_contract/EchoCppContractExecuter.h"
 
 extern "C" {
 void printf(const char* fmt, ...);
@@ -10,11 +11,12 @@ void printf(const char* fmt, ...);
 
 CppContractWrapper* intkey_factory()
 {
-   return new IntKeyCppContractExecuter();
+    return new IntKeyCppContractExecuter();
 }
 
-CppContractWrapper* echo_factory(){
-
+CppContractWrapper* echo_factory()
+{
+    return new EchoCppContractExecuter();
 }
 
 /*void CppContractWrapper::create_initial_contract_state(const std::string& inContractID,

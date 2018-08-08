@@ -23,6 +23,8 @@
 #define NULL (0)
 #endif
 
+#include "CppProcessorHandler.h"
+
 struct EchoCode
 {
     unsigned int code_value;
@@ -61,7 +63,17 @@ struct EchoState
     int Serialize(char* buf, int bufSize);
 };
 
-class EchoCppContractExecuter
+class EchoCppContractException : public CppContractWrapperException
+{
+public:
+    EchoCppContractException(const char* msg) :
+    CppContractWrapperException(msg)
+    {}
+    virtual char const* what() const noexcept { return msg_.c_str(); }
+};
+
+
+class EchoCppContractExecuter : public CppContractWrapper
 {
 public:
     EchoCppContractExecuter() { result = STUB_INTERPRETOR_NO_ERROR; };

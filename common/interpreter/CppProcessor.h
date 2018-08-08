@@ -15,7 +15,7 @@ struct ContractDispatchTableEntry
     contract_factory contract_factory_ptr;
 };
 
-extern ContractDispatchTableEntry contractDisptachTable[];
+//extern ContractDispatchTableEntry contractDisptachTable[];
 
 class CppProcessor : public pc::ContractInterpreter
 {

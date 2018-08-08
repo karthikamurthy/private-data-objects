@@ -20,6 +20,9 @@
 #define NULL (0)
 #endif
 
+#include "CppProcessorHandler.h"
+
+
 struct IntKeyCode
 {
     unsigned int min;
