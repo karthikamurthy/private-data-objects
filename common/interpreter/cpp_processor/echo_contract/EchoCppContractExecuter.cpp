@@ -134,7 +134,7 @@ bool EchoCppContractExecuter::GetResult(char* buf, int bufSize)
     return true;
 }
 
-void HandleFailure(const char* msg)
+void EchoCppContractExecuter::HandleFailure(const char* msg)
 {
     throw EchoCppContractException(msg);
 }

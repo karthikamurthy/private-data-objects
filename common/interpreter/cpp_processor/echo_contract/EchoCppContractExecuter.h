@@ -10,15 +10,6 @@
 #define STUB_INTERPRETOR_ERR_STRING_NULL (8)
 #define STUB_INTERPRETOR_ERR_STRING_TO_INT (9)
 
-#define ACTION_NONE (0)
-#define ACTION_INIT (1)
-#define ACTION_INC (2)
-#define ACTION_DEC (3)
-#define ACTION_TERMINATE (4)
-
-#define MIN_RESULT_BUFFER_SIZE (100)
-#define MIN_STATE_BUFFER_SIZE (13)
-
 #ifndef NULL
 #define NULL (0)
 #endif
@@ -109,6 +100,8 @@ public:
     {
         return (state.Serialize(buf, bufSize) == STUB_INTERPRETOR_NO_ERROR);
     }
+
+    void HandleFailure(const char* msg);
 
     // TODO: GetDependencies()
 

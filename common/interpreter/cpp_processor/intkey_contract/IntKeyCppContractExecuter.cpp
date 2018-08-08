@@ -189,7 +189,7 @@ bool IntKeyCppContractExecuter::GetResult(char* buf, int bufSize)
     return true;
 }
 
-void HandleFailure(const char* msg)
+void IntKeyCppContractExecuter::HandleFailure(const char* msg)
 {
     throw IntKeyCppContractException(msg);
 }
