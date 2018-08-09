@@ -72,3 +72,11 @@ https_proxy = 'http://proxy-us.intel.com:912/'
 # spid_cert_file is the full path to the PEM-encoded certificate file that was
 # submitted to Intel in order to obtain a SPID
 spid_cert_file = '/etc/sawtooth/ias_rk_pub.pem'
+
+# enclave_library is the interpreter which will be used and the default value
+# will be gipsy interpreter
+enclave_library= 'libpdo-enclave_intkey.signed.so'
+
+# enclave_library_path is the path where the interpreter library is stored
+enclave_library_path = '.'
+

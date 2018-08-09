@@ -22,6 +22,7 @@ import pdo.common.utility as putils
 import logging
 logger = logging.getLogger(__name__)
 
+
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------
 class ContractCode(object) :
@@ -36,11 +37,10 @@ class ContractCode(object) :
         """
         if source_name is None :
             source_name = name
-        basename = putils.build_file_name(source_name, extension='.scm')
-        filename = putils.find_file_in_path(basename, search_path)
-        with open(filename, "r") as cfile :
-            code = cfile.read()
 
+        filename = putils.find_file_in_path(source_name, search_path)
+        with open(filename, "r") as cfile :
+            code = cfile.read().rstrip('\n')
         return cls(code, name)
 
     # -------------------------------------------------------
