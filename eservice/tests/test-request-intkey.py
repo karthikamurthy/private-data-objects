@@ -42,6 +42,7 @@ use_ledger = True
 use_eservice = False
 use_pservice = False
 use_type = "gipsy"
+
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------
 def CreateAndRegisterEnclave(config) :
@@ -93,6 +94,7 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
 
     contract_name = 'intkey'
     contract_code = contract_helper.ContractCode.create_from_scheme_file(contract_name,source_name = "intkey", search_path = [".", "..", "contracts"])
+
     logger.info('name && code: %s %s ',contract_name, contract_code.code);
     # create the provisioning servers
     if use_pservice :
@@ -116,7 +118,7 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
 
     contract_state = contract_helper.ContractState.create_new_state(contract_id)
     contract = contract_helper.Contract(contract_code, contract_state, contract_id, contract_creator_id)
-    
+
     # --------------------------------------------------
     logger.info('create the provisioning secrets')
     # --------------------------------------------------
@@ -188,7 +190,7 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
 
     contract.set_state_encryption_key(enclave.enclave_id, encrypted_state_encryption_key)
     contract.save_to_file(contract_name, data_dir=data_dir)
-    
+
     # --------------------------------------------------
     logger.info('create the initial contract state')
     # --------------------------------------------------
@@ -200,7 +202,6 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
             sys.exit(-1)
 
         contract.set_state(initialize_response.encrypted_state)
-        
 
     except Exception as e :
         logger.error('failed to create the initial state; %s', str(e))
@@ -399,8 +400,10 @@ def ParseCommandLine(config, args) :
     if options.eservice :
         use_eservice = True
         config['eservice-url'] = options.eservice
+    
     if options.type :
         use_type = options.type
+
     if options.pservice :
         use_pservice = True
         config['pservice-urls'] = options.pservice

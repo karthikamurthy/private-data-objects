@@ -207,6 +207,7 @@ ContractResponse ContractRequest::process_initialization_request(void)
         return response;
     }
     #endif
+
     catch (...)
     {
         SAFE_LOG(PDO_LOG_ERROR, "unknown exception while processing initialization request");
