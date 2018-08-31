@@ -2,20 +2,18 @@
 
 #include <map>
 #include <string>
-
 #include "ContractInterpreter.h"
+#include "CppProcessorHandler.h"
 
 namespace pc = pdo::contracts;
 
-typedef pc::ContractInterpreter* (*contract_factory)();
+typedef CppContractWrapper* (*contract_factory)();
 
 struct ContractDispatchTableEntry
 {
-    const char* project_name;
+    const char* contract_id;
     contract_factory contract_factory_ptr;
 };
-
-extern ContractDispatchTableEntry contractDisptachTable[];
 
 class CppProcessor : public pc::ContractInterpreter
 {

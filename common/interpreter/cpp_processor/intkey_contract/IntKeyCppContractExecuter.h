@@ -1,14 +1,4 @@
 #pragma once
-#define STUB_INTERPRETOR_NO_ERROR (0)
-#define STUB_INTERPRETOR_ERR (1)
-#define STUB_INTERPRETOR_ERR_CODE (2)
-#define STUB_INTERPRETOR_ERR_MESSAGE (3)
-#define STUB_INTERPRETOR_ERR_STATE (4)
-#define STUB_INTERPRETOR_ERR_PARAM (5)
-#define STUB_INTERPRETOR_ERR_TERMINATED (6)
-#define STUB_INTERPRETOR_ERR_RESULT (7)
-#define STUB_INTERPRETOR_ERR_STRING_NULL (8)
-#define STUB_INTERPRETOR_ERR_STRING_TO_INT (9)
 
 #define ACTION_NONE (0)
 #define ACTION_INIT (1)
@@ -16,12 +6,12 @@
 #define ACTION_DEC (3)
 #define ACTION_TERMINATE (4)
 
-#define MIN_RESULT_BUFFER_SIZE (100)
-#define MIN_STATE_BUFFER_SIZE (13)
-
 #ifndef NULL
 #define NULL (0)
 #endif
+
+#include "CppProcessorHandler.h"
+
 
 struct IntKeyCode
 {
@@ -65,7 +55,16 @@ struct IntKeyState
     int Serialize(char* buf, int bufSize);
 };
 
-class IntKeyCppContractExecuter
+class IntKeyCppContractException : public CppContractWrapperException
+{
+public:
+    IntKeyCppContractException(const char* msg) :
+    CppContractWrapperException(msg)
+    {}
+    virtual char const* what() const noexcept { return msg_.c_str(); }
+};
+
+class IntKeyCppContractExecuter : public CppContractWrapper
 {
 public:
     IntKeyCppContractExecuter() { result = STUB_INTERPRETOR_NO_ERROR; };
@@ -101,6 +100,8 @@ public:
     {
         return (state.Serialize(buf, bufSize) == STUB_INTERPRETOR_NO_ERROR);
     }
+
+    void HandleFailure(const char* msg);
 
     // TODO: GetDependencies()
 

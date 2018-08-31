@@ -1,66 +1,41 @@
-#include "IntKeyCppContractExecuter.h"
+
+#include "EchoCppContractExecuter.h"
 #include <stdio.h>
 #include <iostream>
 
-using namespace std;
 static int StrLen(char* str);
 static char* StrCpy(const char* src, char* dst, int size);
 static char* UintToStr(unsigned int value, char* buf, int size);
 static const char* StrToUint(
-    const char* strPtr, unsigned int* ptrVal, const char* terminators = ",");
+const char* strPtr, unsigned int* ptrVal, const char* terminators = ",");
 
-struct ErrorInfo
+CppContractWrapper* echo_factory()
 {
-    int code;
-    const char* message;
-};
+    return new EchoCppContractExecuter();
+}
 
-ErrorInfo errorInfo[] = {{STUB_INTERPRETOR_NO_ERROR, "OK"},
-    {STUB_INTERPRETOR_ERR, "ERROR: Unknown error"},
-    {STUB_INTERPRETOR_ERR_CODE, "ERROR: Invalid Contract Code"},
-    {STUB_INTERPRETOR_ERR_MESSAGE, "ERROR: Invalid Contract Message"},
-    {STUB_INTERPRETOR_ERR_STATE, "ERROR: Invalid Contract State"},
-    {STUB_INTERPRETOR_ERR_PARAM, "ERROR: Invalid Contract Parameter"},
-    {STUB_INTERPRETOR_ERR_TERMINATED, "ERROR: Contract Termonated"},
-    {STUB_INTERPRETOR_ERR_RESULT, "ERROR: Invalid Result Buffer"},
-    {STUB_INTERPRETOR_ERR_STRING_NULL, "ERROR: Codeinit String is NULL"},
-    {STUB_INTERPRETOR_ERR_STRING_TO_INT, "ERROR: Codeinit String to Int"}, {0, NULL}};
-
-int IntKeyCode::Init(const char* str)
+int EchoCode::Init(const char* str)
 {
     int result = STUB_INTERPRETOR_ERR_CODE;
     if (str != NULL)
     {
-        if ((str = StrToUint(str, &min)) != NULL)
-        {
-            str++;
-            if (StrToUint(str, &max) != NULL)
-            {
-                if (max >= min)
-                {
-                    return STUB_INTERPRETOR_NO_ERROR;
-                }
-            }
-        }
+       return STUB_INTERPRETOR_NO_ERROR;
     }
-    return STUB_INTERPRETOR_ERR_CODE;
+    
+     return STUB_INTERPRETOR_ERR_CODE;
 }
 
-int IntKeyMessage::Init(const char* str)
+int EchoMessage::Init(const char* str)
 {
     int result = STUB_INTERPRETOR_ERR_MESSAGE;
     try
     {
         if (str != NULL)
         {
-            if ((str = StrToUint(str, &action)) != NULL)
-            {
-                str++;
                 if (StrToUint(str, &value) != NULL)
                 {
                     result = STUB_INTERPRETOR_NO_ERROR;
                 }
-            }
         }
     }
     catch (...)
@@ -70,7 +45,7 @@ int IntKeyMessage::Init(const char* str)
     return result;
 }
 
-int IntKeyState::Init(const char* str)
+int EchoState::Init(const char* str)
 {
     int result = STUB_INTERPRETOR_ERR_STATE;
     try
@@ -98,7 +73,7 @@ int IntKeyState::Init(const char* str)
     return result;
 }
 
-int IntKeyState::Serialize(char* buf, int bufSize)
+int EchoState::Serialize(char* buf, int bufSize)
 {
     int result = STUB_INTERPRETOR_NO_ERROR;
 
@@ -115,65 +90,24 @@ int IntKeyState::Serialize(char* buf, int bufSize)
     return result;
 }
 
-bool IntKeyCppContractExecuter::ExecuteMessage(const char* contractId, const char* creatorId)
+bool EchoCppContractExecuter::ExecuteMessage(const char* contractId, const char* creatorId)
 {
     // TODO: contractId and creatorId are not used
 
     if (result == STUB_INTERPRETOR_NO_ERROR)
     {
-        if (message.action == ACTION_INIT)
-        {
-            if (message.value < code.min || message.value > code.max)
-            {
-                result = STUB_INTERPRETOR_ERR_PARAM;
-            }
-            else
-            {
-                state.value = message.value;
-            }
-        }
-        else if (state.terminated)
+        state.value = message.value;
+
+        if (state.terminated)
         {
             result = STUB_INTERPRETOR_ERR_TERMINATED;
-        }
-        else
-        {
-            switch (message.action)
-            {
-                case ACTION_INC:
-                    if (message.value > (code.max - state.value))
-                    {
-                        result = STUB_INTERPRETOR_ERR_PARAM;
-                    }
-                    else
-                    {
-                        state.value += message.value;
-                    }
-                    break;
-                case ACTION_DEC:
-                    if (message.value > (state.value - code.min))
-                    {
-                        result = STUB_INTERPRETOR_ERR_PARAM;
-                    }
-                    else
-                    {
-                        state.value -= message.value;
-                    }
-                    break;
-                case ACTION_TERMINATE:
-                    state.terminated = 1;
-                    break;
-                default:
-                    result = STUB_INTERPRETOR_ERR_PARAM;
-                    break;
-            }
         }
     }
 
     return (result == STUB_INTERPRETOR_NO_ERROR);
 }
 
-bool IntKeyCppContractExecuter::GetResult(char* buf, int bufSize)
+bool EchoCppContractExecuter::GetResult(char* buf, int bufSize)
 {
     if (bufSize < MIN_RESULT_BUFFER_SIZE || result != STUB_INTERPRETOR_NO_ERROR)
     {
@@ -186,6 +120,11 @@ bool IntKeyCppContractExecuter::GetResult(char* buf, int bufSize)
     }
 
     return true;
+}
+
+void EchoCppContractExecuter::HandleFailure(const char* msg)
+{
+    throw EchoCppContractException(msg);
 }
 
 const char* StrToUint(const char* strPtr, unsigned int* ptrVal, const char* terminators)

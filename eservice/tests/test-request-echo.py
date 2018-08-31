@@ -29,7 +29,7 @@ import pdo.contract as contract_helper
 import pdo.common.crypto as crypto
 import pdo.common.keys as keys
 import pdo.common.secrets as secrets
-
+import random
 import logging
 logger = logging.getLogger(__name__)
 
@@ -93,7 +93,7 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
     contract_creator_id = contract_creator_keys.identity
 
     contract_name = 'intkey'
-    contract_code = contract_helper.ContractCode.create_from_scheme_file(contract_name,source_name="intkey.txt", search_path = [".", "..", "contracts"])
+    contract_code = contract_helper.ContractCode.create_from_scheme_file(contract_name,source_name="echo.txt", search_path = [".", "..", "contracts"])
     logger.info('name && code: %s %s ',contract_name, contract_code.code);
     # create the provisioning servers
     if use_pservice :
@@ -197,7 +197,7 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
         if initialize_response.status is False :
             logger.error('contract initialization failed: %s', initialize_response.result)
             sys.exit(-1)
-        logger.info('Result :%s///',initialize_response.result)
+
         contract.set_state(initialize_response.encrypted_state)
 
     except Exception as e :
@@ -242,7 +242,7 @@ def UpdateTheContract(config, enclave, contract, contract_invoker_keys) :
     start_time = time.time()
     for x in range(config['iterations']) :
         try :
-            expression = str(random.randint(2,3))+ ',' + str(random.randint(1,100))
+            expression = str(random.randint(1,100))
             update_request = contract.create_update_request(contract_invoker_keys,enclave,expression)
             update_response = update_request.evaluate()
             if update_response.status is False :
