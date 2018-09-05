@@ -39,6 +39,7 @@
 #include "contract_request.h"
 #include "contract_response.h"
 #include "contract_secrets.h"
+#include "work_order.h"
 
 ByteArray last_result;
 
@@ -146,7 +147,11 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
 
         // Unseal the enclave persistent data
         EnclaveData enclaveData(inSealedSignupData);
-
+		if(!inEncryptedSessionKey){
+			WorkOrder wo_process;
+				
+		   last_result = wo_process.Process(char *(inSerializedRequest));
+		}else{
         ByteArray encrypted_key(
             inEncryptedSessionKey, inEncryptedSessionKey + inEncryptedSessionKeySize);
         ByteArray session_key = enclaveData.decrypt_message(encrypted_key);
@@ -157,9 +162,10 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
 
         ContractResponse response(request.process_request());
         last_result = response.SerializeAndEncrypt(session_key, enclaveData);
-
+		}
         // save the response and return the size of the buffer required for it
         (*outSerializedResponseSize) = last_result.size();
+		
     }
     catch (pdo::error::Error& e)
     {
