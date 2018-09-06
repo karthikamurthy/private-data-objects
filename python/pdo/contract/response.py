@@ -98,6 +98,10 @@ class ContractResponse(object) :
         :param request: the ContractRequest object corresponding to the response
         :param response: diction containing the response from the enclave
         """
+        if request.work_order:
+            self.result= response['result']
+            return
+	
         self.status = response['Status']
         self.result = response['Result']
         self.state_changed = response['StateChanged']
