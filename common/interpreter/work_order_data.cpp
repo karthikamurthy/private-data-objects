@@ -16,18 +16,16 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-
+ 
 #include "error.h"
 #include "pdo_error.h"
 #include "types.h"
 
-#include "crypto.h"
+#include "crypto/crypto.h"
 #include "jsonvalue.h"
-#include "parson.h"
+#include "packages/parson/parson.h"
 
-#include "enclave_utils.h"
 #include "interpreter/ContractInterpreter.h"
-
 #include "work_order.h"
 #include "work_order_data.h"
 
@@ -42,6 +40,7 @@ namespace pdo
 			object,
 			"Type",
 			"failed to retrieve work order data type");
+
 		output_link = WorkOrder::GetJsonStr(object, "OutputLink");
 
 		WorkOrder::GetByteArray(
@@ -49,6 +48,7 @@ namespace pdo
 			"BLOB",
 			NULL, //"failed to retrieve work order input data",
 			encrypted_input_data);
+
 		if (!encrypted_input_data.empty())
 		{
 			WorkOrder::GetByteArray(

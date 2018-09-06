@@ -1,0 +1,1 @@
+{"Result": {"WorkOrderId": "WorkOrderId111", "Data": [{"Type": "result", "Sha256Hash": "d111", "OutputLink": "#inline", "BLOB": "dummy output"}], "EnclaveGeneratedNonce": "123", "EnclaveSignature": "99999"}}

@@ -30,14 +30,18 @@ TARGET_COMPILE_OPTIONS(${PROJECT_NAME} PRIVATE "-nostdinc")
 TARGET_COMPILE_OPTIONS(${PROJECT_NAME} PRIVATE "-nostdinc++")
 TARGET_COMPILE_OPTIONS(${PROJECT_NAME} PRIVATE "-fno-builtin-printf")
 
+
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "${SGX_SDK}/include")
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "${SGX_SDK}/include/tlibc")
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "${SGX_SDK}/include/libcxx")
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "${SGX_SSL}/include")
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC "../")
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE ${PDO_TOP_DIR}/common/packages/parson)
 
 ################################################################################
 # Interpretter subdirectory
 ################################################################################
 
-ADD_SUBDIRECTORY (gipsy_scheme)
+ADD_SUBDIRECTORY(gipsy_scheme)
 ADD_SUBDIRECTORY(cpp_processor)
 

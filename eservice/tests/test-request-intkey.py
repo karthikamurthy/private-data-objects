@@ -189,17 +189,27 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
     contract.set_state_encryption_key(enclave.enclave_id, encrypted_state_encryption_key)
     contract.save_to_file(contract_name, data_dir=data_dir)
     # --------------------------------------------------
-    logger.info('create the initial contract state')
+    logger.info('create the initial contract state %s', input_json_file)
     # --------------------------------------------------
     try :
-        initialize_request = contract.create_initialize_request(contract_creator_keys, enclave,expression='1,1')
+        initialize_request = contract.create_initialize_request(contract_creator_keys, enclave,work_order=input_json_file,expression='1,1')
         initialize_response = initialize_request.evaluate()
-        if initialize_response.status is False :
+        
+        logger.info('Result :%s///',initialize_response.result)
+        enclave_helper.write_json_file('output',initialize_response)
+        
+        if not input_json_file and initialize_response.status is False :
             logger.error('contract initialization failed: %s', initialize_response.result)
             sys.exit(-1)
-        logger.info('Result :%s///',initialize_response.result)
-        contract.set_state(initialize_response.encrypted_state)
+       
 
+        #logger.info('Result :%s///',initialize_response.result)
+        #enclave_helper.write_json_file('output',initialize_response)
+
+        if not input_json_file :
+            contract.set_state(initialize_response.encrypted_state)
+        
+        
     except Exception as e :
         logger.error('failed to create the initial state; %s', str(e))
         sys.exit(-1)
@@ -316,7 +326,8 @@ def LocalMain(config) :
         sys.exit(-1)
 
     try :
-        UpdateTheContract(config, enclave, contract, contract_creator_keys)
+        if not input_json_file :
+            UpdateTheContract(config, enclave, contract, contract_creator_keys)
     except Exception as e :
         logger.error('contract execution failed; %s', str(e))
         sys.exit(-1)
@@ -356,6 +367,7 @@ def ParseCommandLine(config, args) :
     global use_ledger
     global use_eservice
     global use_pservice
+    global input_json_file
 
     parser = argparse.ArgumentParser()
 
@@ -369,6 +381,7 @@ def ParseCommandLine(config, args) :
 
     parser.add_argument('--logfile', help='Name of the log file, __screen__ for standard output', type=str)
     parser.add_argument('--loglevel', help='Logging level', type=str)
+    parser.add_argument('--input_file', help='Logging level', type=str, default=[])
 
     options = parser.parse_args(args)
 
@@ -408,9 +421,15 @@ def ParseCommandLine(config, args) :
     if options.eservice :
         use_eservice = True
         config['eservice-url'] = options.eservice
+		
     if options.pservice :
         use_pservice = True
         config['pservice-urls'] = options.pservice
+		
+    if options.input_file:
+        input_json_file = enclave_helper.read_json_file(input_file=options.input_file)
+    else :
+        input_json_file=''
 
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------

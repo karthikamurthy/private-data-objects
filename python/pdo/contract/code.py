@@ -21,9 +21,6 @@ import pdo.common.utility as putils
 
 import logging
 logger = logging.getLogger(__name__)
-global __enclave_type__ 
-__enclave_type__= "gipsy"
-
 
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------
@@ -39,8 +36,6 @@ class ContractCode(object) :
         """
         if source_name is None :
             source_name = name
-        #gipsy_enabled = os.environ.get('GIPSY_ENABLED')
-        enclave_type = __enclave_type__
 
         basename = source_name
         filename = putils.find_file_in_path(basename, search_path)

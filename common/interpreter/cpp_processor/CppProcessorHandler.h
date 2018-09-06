@@ -1,3 +1,18 @@
+/* Copyright 2018 Intel Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #pragma once
 #define STUB_INTERPRETOR_NO_ERROR (0)
 #define STUB_INTERPRETOR_ERR (1)
@@ -23,18 +38,7 @@ struct ErrorInfo
     const char* message;
 };
 
-/*ErrorInfo errorInfo[] = {{STUB_INTERPRETOR_NO_ERROR, "OK"},
-    {STUB_INTERPRETOR_ERR, "ERROR: Unknown error"},
-    {STUB_INTERPRETOR_ERR_CODE, "ERROR: Invalid Contract Code"},
-    {STUB_INTERPRETOR_ERR_MESSAGE, "ERROR: Invalid Contract Message"},
-    {STUB_INTERPRETOR_ERR_STATE, "ERROR: Invalid Contract State"},
-    {STUB_INTERPRETOR_ERR_PARAM, "ERROR: Invalid Contract Parameter"},
-    {STUB_INTERPRETOR_ERR_TERMINATED, "ERROR: Contract Termonated"},
-    {STUB_INTERPRETOR_ERR_RESULT, "ERROR: Invalid Result Buffer"},
-    {STUB_INTERPRETOR_ERR_STRING_NULL, "ERROR: Codeinit String is NULL"},
-    {STUB_INTERPRETOR_ERR_STRING_TO_INT, "ERROR: Codeinit String to Int"}, {0, NULL}};*/
-
-class CppContractWrapper; // Forward decleration
+class CppContractWrapper; // Forward declaration
 
 CppContractWrapper* intkey_factory();
 CppContractWrapper* echo_factory();

@@ -1,24 +1,48 @@
+/* Copyright 2018 Intel Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "CppProcessor.h"
 #include "ContractDispatcher.cpp"
 #include <iostream>
 #include <string>
 
-extern "C" {
-void printf(const char* fmt, ...);
-}
-
 CppContractWrapper* LookUpContract(std::string contract_code)
 {
     for (int i = 0; contractDispatchTable[i].contract_id != NULL; i++)
     {
-        int l = strlen(contractDispatchTable[i].contract_id);
         if (contract_code.compare(contractDispatchTable[i].contract_id) == 0)
         {
             return contractDispatchTable[i].contract_factory_ptr();
         }
     }
+    pdo::error::RuntimeError("Contract not  Found\n");
 
     return nullptr;
+}
+
+pc::ContractInterpreter* LookUpWorkOrder(std::string work_oder_code)
+{
+    for (int i = 0; workOrderDispatchTable[i].project_name != NULL; i++)
+    {
+        if (work_oder_code.compare(workOrderDispatchTable[i].project_name) == 0)
+        {
+            return workOrderDispatchTable[i].work_order_factory_ptr();
+        }
+    }
+    pdo::error::RuntimeError("WorkOrder not  Found\n");
+	return NULL;
 }
 
 CppProcessor::CppProcessor() {}
@@ -36,7 +60,6 @@ void CppProcessor::create_initial_contract_state(const std::string& inContractID
     std::string enclave_type = contractCode.substr(pos + 1);
     CppContractWrapper* executer = LookUpContract(enclave_type);
 
-    //TODO Handle error case
     if(!executer)
         return;
 
@@ -82,7 +105,6 @@ void CppProcessor::send_message_to_contract(const std::string& inContractID,
     std::string enclave_type = contractCode.substr(pos + 1);
     CppContractWrapper* executer = LookUpContract(enclave_type);
 
-    //TODO: handle error case
     if(!executer)
         return;
 
@@ -118,8 +140,6 @@ void CppProcessor::send_message_to_contract(const std::string& inContractID,
             if (executer->GetResult(outResultRaw, sizeof(outResultRaw)))
             {
                 outMessageResult = outResultRaw;
-
-                // TODO: Get dependencies
                 result = true;
             }
         }
@@ -131,4 +151,22 @@ void CppProcessor::send_message_to_contract(const std::string& inContractID,
 
     if (!result)
         executer->HandleFailure("Unknown error");
+}
+
+void CppProcessor::process_work_order(
+	std::string code_id,
+	ByteArray tc_service_address,
+	ByteArray participant_address,
+	ByteArray enclave_id,
+	ByteArray work_order_id,
+	std::vector<pdo::WorkOrderData>& work_order_data)
+{
+	pdo::contracts::ContractInterpreter* work_order = LookUpWorkOrder(code_id);
+	work_order->process_work_order(
+		code_id,
+		tc_service_address,
+		participant_address,
+		enclave_id,
+		work_order_id,
+		work_order_data);
 }
