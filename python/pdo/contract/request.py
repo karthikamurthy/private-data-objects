@@ -22,6 +22,7 @@ from pdo.contract.message import ContractMessage
 from pdo.submitter.submitter import Submitter
 
 import logging
+import base64
 logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------
@@ -34,7 +35,8 @@ class ContractRequest(object) :
             raise ValueError('invalid operation')
 
         self.operation = operation
-
+        logger.info("workorder added")
+        self.work_order = kwargs.get('work_order','')
         self.contract_id = contract.contract_id
         self.creator_id = contract.creator_id
         self.encrypted_state_encryption_key = contract.get_state_encryption_key(enclave_service.enclave_id)
@@ -80,25 +82,45 @@ class ContractRequest(object) :
 
     # enclave_service -- enclave service wrapper object
     def evaluate(self) :
-        encrypted_session_key = self.__encrypt_session_key()
-        encrypted_request = self.__encrypt_request()
+        if self.work_order :
+            work_order_mode = self.work_order
+            logger.info("setting session key is 0")
+            #encrypted_session_key = base64.b64encode('1234')
+            #encrypted_request = base64.b64encode(self.work_order)
+            self.session_key = '0'
+            encrypted_session_key = self.__encrypt_session_key()
+            
+            serialized_byte_array = crypto.string_to_byte_array(work_order_mode)
+            #enc_request = crypto.SKENC_EncryptMessage(self.session_key, serialized_byte_array)
+            encrypted_request = crypto.byte_array_to_base64(serialized_byte_array)
+            
+            #encrypted_session_key = crypto.byte_array_to_base64(crypto.string_to_byte_array('1234'))
+            #encrypted_request = crypto.byte_array_to_base64(crypto.string_to_byte_array(self.work_order))
+        else :
+            encrypted_session_key = self.__encrypt_session_key()
+            encrypted_request = self.__encrypt_request()
 
         try :
             encoded_encrypted_response = self.enclave_service.send_to_contract(encrypted_session_key, encrypted_request)
             assert encoded_encrypted_response
 
-            logger.debug("raw response from enclave: %s", encoded_encrypted_response)
+            logger.info("raw response from enclave: %s", encoded_encrypted_response)
         except :
             logger.exception('contract invocation failed')
             raise
 
         try :
-            decrypted_response = self.__decrypt_response(encoded_encrypted_response)
-            response_string = crypto.byte_array_to_string(decrypted_response)
-            response_parsed = json.loads(response_string[0:-1])
+            if self.work_order :
+                logger.info("-----------------------Decrypting the work_order response ---------------------")
+                decrypted_response = crypto.base64_to_byte_array(encoded_encrypted_response)
+                response_string = crypto.byte_array_to_string(decrypted_response)
+                response_parsed = json.loads(response_string[0:-1])
+            else:
+                decrypted_response = self.__decrypt_response(encoded_encrypted_response)
+                response_string = crypto.byte_array_to_string(decrypted_response)
+                response_parsed = json.loads(response_string[0:-1])
 
-            logger.debug("parsed response: %s", response_parsed)
-
+            logger.info("parsed response: %s", response_parsed)
             contract_response = ContractResponse(self, response_parsed)
         except :
             logger.exception('contract response is invalid')

@@ -144,17 +144,56 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
         pdo::error::ThrowIfNull(inEncryptedSessionKey, "Session key pointer is NULL");
         pdo::error::ThrowIfNull(inSerializedRequest, "Serialized request pointer is NULL");
         pdo::error::ThrowIfNull(outSerializedResponseSize, "Response size pointer is NULL");
-
+	SAFE_LOG(PDO_LOG_DEBUG, "Values received at ecall_HandleContractRequest");
         // Unseal the enclave persistent data
         EnclaveData enclaveData(inSealedSignupData);
-		if(!inEncryptedSessionKey){
-			WorkOrder wo_process;
-				
-		   last_result = wo_process.Process(char *(inSerializedRequest));
-		}else{
         ByteArray encrypted_key(
             inEncryptedSessionKey, inEncryptedSessionKey + inEncryptedSessionKeySize);
+        
         ByteArray session_key = enclaveData.decrypt_message(encrypted_key);
+        for(auto itr : session_key)
+        {
+            printf("session key : %d\n", itr);
+            
+        }
+
+        //ByteArray encrypted_request(
+        //    inSerializedRequest, inSerializedRequest + inSerializedRequestSize);
+        //ContractRequest request(session_key, encrypted_request);
+        
+	if(session_key[0] == 48) {
+		SAFE_LOG(PDO_LOG_DEBUG, "\nWorkOrder Intialized\n");
+		//serialized_byte_array = crypto.byte_array_to_(self.work_order)
+        //encrypted_request = crypto.byte_array_to_base64(serialized_byte_array)
+        ByteArray encrypted_request(
+            inSerializedRequest, inSerializedRequest + inSerializedRequestSize);
+          
+		//ByteArray session_req = enclaveData.decrypt_message(encrypted_request);
+        
+        for(auto itr : encrypted_request)
+        {
+            printf("%c", itr);
+            
+            
+        }
+        
+        printf("\n");
+        
+        
+		WorkOrder wo_process;
+
+		//std::string wo_string = std::string((char *)inSerializedRequest); 
+        std::string wo_string(encrypted_request.begin(), encrypted_request.end());
+	    last_result = wo_process.Process(wo_string);
+
+	}
+	else
+	{
+        
+	SAFE_LOG(PDO_LOG_DEBUG, "Regular request handling at ecall_HandleContractRequest ");
+	//ByteArray encrypted_key(
+        //    inEncryptedSessionKey, inEncryptedSessionKey + inEncryptedSessionKeySize);
+        //ByteArray session_key = enclaveData.decrypt_message(encrypted_key);
 
         ByteArray encrypted_request(
             inSerializedRequest, inSerializedRequest + inSerializedRequestSize);
@@ -162,9 +201,11 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
 
         ContractResponse response(request.process_request());
         last_result = response.SerializeAndEncrypt(session_key, enclaveData);
-		}
+	}
+	SAFE_LOG(PDO_LOG_DEBUG, "ecall_handlieing completed");
         // save the response and return the size of the buffer required for it
         (*outSerializedResponseSize) = last_result.size();
+    	
 		
     }
     catch (pdo::error::Error& e)

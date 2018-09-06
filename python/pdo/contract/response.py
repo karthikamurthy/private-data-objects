@@ -98,6 +98,14 @@ class ContractResponse(object) :
         :param request: the ContractRequest object corresponding to the response
         :param response: diction containing the response from the enclave
         """
+        if request.work_order:
+            logger.info("-----------------------Creating the work_order response ---------------------")
+            if 'result' not in response:
+                self.result = response['error']
+            else:
+                self.result= response['result']
+            return
+	
         self.status = response['Status']
         self.result = response['Result']
         self.state_changed = response['StateChanged']
@@ -125,12 +133,12 @@ class ContractResponse(object) :
             self.originator_keys = request.originator_keys
             self.enclave_service = request.enclave_service
 
-            self.old_state_hash = ()
-            if request.operation != 'initialize' :
-                self.old_state_hash = ContractState.compute_hash(request.contract_state.encrypted_state)
-
-            if not self.__verify_enclave_signature(request.enclave_keys) :
-                raise Exception('failed to verify enclave signature')
+            if not request.work_order :
+                self.old_state_hash = ()
+                if request.operation != 'initialize' :
+                    self.old_state_hash = ContractState.compute_hash(request.contract_state.encrypted_state)
+                if not self.__verify_enclave_signature(request.enclave_keys) :
+                    raise Exception('failed to verify enclave signature')
 
     # -------------------------------------------------------
     def __verify_enclave_signature(self, enclave_keys) :

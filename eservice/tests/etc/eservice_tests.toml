@@ -52,5 +52,5 @@ https_proxy = ''
 spid_cert_file = ''
 
 #enclvae library to be used
-eservice_enclave_library = 'libpdo-enclave.signed.so'
-#eservice_enclave_library = 'libpdo-enclave_cpp_processor.signed.so'
+#eservice_enclave_library = 'libpdo-enclave.signed.so'
+eservice_enclave_library = 'libpdo-enclave_cpp_processor.signed.so'
