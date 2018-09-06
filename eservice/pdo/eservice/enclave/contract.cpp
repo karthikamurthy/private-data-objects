@@ -61,6 +61,8 @@ std::string contract_handle_contract_request(
     const std::string& serialized_request
     )
 {
+    
+    printf("In contract handle contract request session_key %s and  request%s\n", encrypted_session_key, serialized_request);
     pdo_err_t presult;
 
     uint32_t response_identifier;

@@ -1,0 +1,30 @@
+{
+  "jsonrpc": "2.0",	
+  "method": "WorkOrderSubmit",
+  "id": 101,
+  "params": {
+    "ResponseTimeoutMSecs": 60000,
+    "ParticipantSignature": "ParticipantSignature111",
+    "ParticipantGeneratedNonce": "ParticipantGeneratedNonce111",
+    "TcServiceAddress": "tcAddress111",	
+    "EnclaveId": "EnclaveId111",
+    "WorkOrderId": "WorkOrderId111",
+    "ParticipantAddress": "ParticipantAddress111", 
+    "Data": 
+    [
+      {
+        "Type": "message",	
+        "Sha256Hash": "mhash444",
+        "InputLink": "#inline",
+        "BLOB": "message-111",
+        "EncryptedDataEncryptionKey": "11111"
+      },
+      {
+        "Type": "result",	
+        "OutputLink": "#inline", 
+        "EncryptedDataEncryptionKey": "22222"
+      }
+    ]
+  }
+}
+
