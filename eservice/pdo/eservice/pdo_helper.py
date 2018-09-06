@@ -41,10 +41,30 @@ from pdo.contract import code as pdo_code
 import logging
 logger = logging.getLogger(__name__)
 
-__all__ = [ "Enclave", "initialize_enclave" ]
+__all__ = [ "Enclave", "initialize_enclave", "read_json_file","write_json_file" ]
 
 
 # -----------------------------------------------------------------
+# -------------------------------------------------------
+def read_json_file(input_file, data_dir = ['./', '../', './contracts', '/']) :
+    logger.debug('Read input json input file from %s', input_file)
+    file_name = putils.find_file_in_path(input_file, data_dir)
+    #if os.path.exists(filename) is not True :
+    #    logger.debug("Input json file doesnt exist. Disabling work order %s", input_file)
+    #    return
+    with open(file_name, "r") as input_json_file :
+        input_json = input_json_file.read().rstrip('\n')
+    return input_json
+# -------------------------------------------------------
+def write_json_file(file_name,input_data, data_dir ='./contracts') :
+    logger.debug('Data file is stroed at %s with name %s.json',data_dir, file_name)
+    result_info = dict()
+    result_info['Result'] = input_data.result
+    filename = os.path.realpath(os.path.join(data_dir, file_name + ".json"))
+    logger.debug('save result data to %s', filename)
+    with open(filename, "w") as file :
+        json.dump(result_info, file)
+
 # -----------------------------------------------------------------
 def initialize_enclave(enclave_config) :
     """initialize_enclave -- call the initialization function on the
@@ -153,6 +173,17 @@ class Enclave(object) :
         self.enclave_keys = keys.EnclaveKeys(self.verifying_key, self.encryption_key)
 
     # -------------------------------------------------------
+    #def read_json_file(cls, input_file, data_dir = ['.', '..', './contracts']) :
+     #   logger.debug('Read input json input file from %s', input_file)
+      #  filename = putils.find_file_in_path(input_file, data_dir)
+        #if os.path.exists(filename) is not True :
+        #    logger.debug("Input json file doesnt exist. Disabling work order %s", input_file)
+        #    return
+
+       # with open(input_file, "r") as input_json_file :
+        #    input_json = input_json_file.read().rstrip('\n')
+        #return cls(input_json)
+   # -------------------------------------------------------
     def send_to_contract(self, encrypted_session_key, encrypted_request) :
 
         """
@@ -161,6 +192,12 @@ class Enclave(object) :
         :param encrypted_session_key: base64 encoded encrypted AES key
         :param encrypted_request: base64 encoded encrypted contract request
         """
+        logger.info(" pod helper session key is zero %s --- %s --", encrypted_session_key, encrypted_request)
+        #if encrypted_session_key == '0' :
+        #    logger.info("session key is zero %s --- %s --", encrypted_session_key, encrypted_request)
+        #else :
+        #    logger.info("sessio keyis non-zero")
+
         return pdo_enclave.send_to_contract(
             self.sealed_data,
             encrypted_session_key,

@@ -124,10 +124,12 @@ pdo_err_t pdo::enclave_api::contract::HandleContractRequest(
     try
     {
         size_t response_size;
+	 //printf("Handle contract Request 1 %.*s \n %.*s end ",inEncryptedSessionKey, inSerializedRequest);
         ByteArray sealed_enclave_data = Base64EncodedStringToByteArray(inSealedEnclaveData);
         ByteArray encrypted_session_key = Base64EncodedStringToByteArray(inEncryptedSessionKey);
         ByteArray serialized_request = Base64EncodedStringToByteArray(inSerializedRequest);
-
+        //printf("Handle contract Request 2 %.*s\n %.*s end ",encrypted_session_key,serialized_request);
+        
         // xxxxx call the enclave
         sgx_enclave_id_t enclaveid = g_Enclave.GetEnclaveId();
 
