@@ -140,12 +140,11 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
 
     try
     {
-        //pdo::error::ThrowIfNull(inSealedSignupData, "Sealed signup data pointer is NULL");
-        //pdo::error::ThrowIfNull(inEncryptedSessionKey, "Session key pointer is NULL");
-        //pdo::error::ThrowIfNull(inSerializedRequest, "Serialized request pointer is NULL");
-        //pdo::error::ThrowIfNull(outSerializedResponseSize, "Response size pointer is NULL");
-        
-	SAFE_LOG(PDO_LOG_DEBUG, "\nValues received at ecall_HandleContractRequest\n");
+        pdo::error::ThrowIfNull(inSealedSignupData, "Sealed signup data pointer is NULL");
+        pdo::error::ThrowIfNull(inEncryptedSessionKey, "Session key pointer is NULL");
+        pdo::error::ThrowIfNull(inSerializedRequest, "Serialized request pointer is NULL");
+        pdo::error::ThrowIfNull(outSerializedResponseSize, "Response size pointer is NULL");
+	SAFE_LOG(PDO_LOG_DEBUG, "Values received at ecall_HandleContractRequest");
         // Unseal the enclave persistent data
         EnclaveData enclaveData(inSealedSignupData);
         ByteArray encrypted_key(
