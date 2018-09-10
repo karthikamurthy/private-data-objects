@@ -208,7 +208,8 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
 
         if not input_json_file :
             contract.set_state(initialize_response.encrypted_state)
-
+        
+        
     except Exception as e :
         logger.error('failed to create the initial state; %s', str(e))
         sys.exit(-1)

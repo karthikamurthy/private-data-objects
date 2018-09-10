@@ -18,8 +18,8 @@
 #include <string>
 #include <vector>
 
-#include "parson.h"
-#include "types.h"
+#include "../packages/parson/parson.h"
+#include "../types.h"
 
 
 namespace pdo
