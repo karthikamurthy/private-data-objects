@@ -195,18 +195,13 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
         initialize_request = contract.create_initialize_request(contract_creator_keys, enclave,work_order=input_json_file,expression='1,1')
         initialize_response = initialize_request.evaluate()
         
-        logger.info('Result :%s///',initialize_response.result)
-        enclave_helper.write_json_file('output',initialize_response)
-        
-        if not input_json_file and initialize_response.status is False :
-            logger.error('contract initialization failed: %s', initialize_response.result)
+        if input_json_file:
+            logger.info('-------------------Result :%s -------------------------',initialize_response.result)
+        elif initialize_response.status is False :
+            logger.error('contract initialization failed: %s', initialize_response)
             sys.exit(-1)
-       
-
-        #logger.info('Result :%s///',initialize_response.result)
-        #enclave_helper.write_json_file('output',initialize_response)
-
-        if not input_json_file :
+        else:
+            logger.info('Result :%s///',initialize_response)
             contract.set_state(initialize_response.encrypted_state)
 
     except Exception as e :

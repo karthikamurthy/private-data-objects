@@ -99,7 +99,6 @@ class ContractResponse(object) :
         :param response: diction containing the response from the enclave
         """
         if request.work_order:
-            logger.info("-----------------------Creating the work_order response ---------------------")
             self.result= response['result']
             return
 	

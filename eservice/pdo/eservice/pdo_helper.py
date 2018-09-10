@@ -43,8 +43,6 @@ logger = logging.getLogger(__name__)
 
 __all__ = [ "Enclave", "initialize_enclave", "read_json_file","write_json_file" ]
 
-
-# -----------------------------------------------------------------
 # -------------------------------------------------------
 def read_json_file(input_file, data_dir = ['./', '../', './contracts', '/']) :
     logger.debug('Read input json input file from %s', input_file)
@@ -64,7 +62,6 @@ def write_json_file(file_name,input_data, data_dir ='./contracts') :
     logger.debug('save result data to %s', filename)
     with open(filename, "w") as file :
         json.dump(result_info, file)
-
 # -----------------------------------------------------------------
 def initialize_enclave(enclave_config) :
     """initialize_enclave -- call the initialization function on the

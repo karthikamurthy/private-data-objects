@@ -35,8 +35,9 @@ class ContractRequest(object) :
             raise ValueError('invalid operation')
 
         self.operation = operation
-        logger.info("workorder added")
-        self.work_order = kwargs.get('work_order','')
+        s            encrypted_session_key = self.__encrypt_session_key()
+            encrypted_request = self.__encrypt_request()
+elf.work_order = kwargs.get('work_order','')
         self.contract_id = contract.contract_id
         self.creator_id = contract.creator_id
         self.encrypted_state_encryption_key = contract.get_state_encryption_key(enclave_service.enclave_id)
@@ -83,19 +84,10 @@ class ContractRequest(object) :
     # enclave_service -- enclave service wrapper object
     def evaluate(self) :
         if self.work_order :
-            work_order_mode = self.work_order
-            logger.info("setting session key is 0")
-            #encrypted_session_key = base64.b64encode('1234')
-            #encrypted_request = base64.b64encode(self.work_order)
             self.session_key = '0'
             encrypted_session_key = self.__encrypt_session_key()
-            
-            serialized_byte_array = crypto.string_to_byte_array(work_order_mode)
-            #enc_request = crypto.SKENC_EncryptMessage(self.session_key, serialized_byte_array)
+            serialized_byte_array = crypto.string_to_byte_array(self.work_order)
             encrypted_request = crypto.byte_array_to_base64(serialized_byte_array)
-            
-            #encrypted_session_key = crypto.byte_array_to_base64(crypto.string_to_byte_array('1234'))
-            #encrypted_request = crypto.byte_array_to_base64(crypto.string_to_byte_array(self.work_order))
         else :
             encrypted_session_key = self.__encrypt_session_key()
             encrypted_request = self.__encrypt_request()
@@ -111,7 +103,6 @@ class ContractRequest(object) :
 
         try :
             if self.work_order :
-                logger.info("-----------------------Decrypting the work_order response ---------------------")
                 decrypted_response = crypto.base64_to_byte_array(encoded_encrypted_response)
                 response_string = crypto.byte_array_to_string(decrypted_response)
                 response_parsed = json.loads(response_string[0:-1])
