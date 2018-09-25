@@ -189,13 +189,13 @@ def CreateAndRegisterContract(config, enclave, contract_creator_keys) :
     contract.set_state_encryption_key(enclave.enclave_id, encrypted_state_encryption_key)
     contract.save_to_file(contract_name, data_dir=data_dir)
     # --------------------------------------------------
-    logger.info('create the initial contract state %s', input_json_file)
+    logger.info('create the initial contract state')
     # --------------------------------------------------
     try :
         initialize_request = contract.create_initialize_request(contract_creator_keys, enclave,work_order=input_json_file,expression='1,1')
         initialize_response = initialize_request.evaluate()
         
-        logger.info('Result :%s///',initialize_response.result)
+        logger.info('Result :%s',initialize_response.result)
         enclave_helper.write_json_file('output',initialize_response)
         
         if not input_json_file and initialize_response.status is False :

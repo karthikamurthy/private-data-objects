@@ -57,7 +57,7 @@ public:
 		EchoResultImpl echo_result_impl;
 		result_str = echo_result_impl.Process(
 			pdo::WorkOrder::ByteArrayToStr(message->decrypted_input_data));
-		
+
 		result->decrypted_output_data = pdo::WorkOrder::StrToByteArray(result_str);
 	};
 

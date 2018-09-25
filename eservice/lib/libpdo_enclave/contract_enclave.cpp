@@ -149,7 +149,7 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
             inEncryptedSessionKey, inEncryptedSessionKey + inEncryptedSessionKeySize);
         
         ByteArray session_key = enclaveData.decrypt_message(encrypted_key);
-
+        //Ascii Value of 0 is 48
         if(session_key[0] == 48) {
             ByteArray encrypted_request(
                 inSerializedRequest, inSerializedRequest + inSerializedRequestSize);

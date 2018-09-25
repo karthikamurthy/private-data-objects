@@ -94,7 +94,7 @@ class ContractRequest(object) :
             encoded_encrypted_response = self.enclave_service.send_to_contract(encrypted_session_key, encrypted_request)
             assert encoded_encrypted_response
 
-            logger.info("raw response from enclave: %s", encoded_encrypted_response)
+            #logger.info("raw response from enclave: %s", encoded_encrypted_response)
         except :
             logger.exception('contract invocation failed')
             raise
@@ -109,7 +109,7 @@ class ContractRequest(object) :
                 response_string = crypto.byte_array_to_string(decrypted_response)
                 response_parsed = json.loads(response_string[0:-1])
 
-            logger.info("parsed response: %s", response_parsed)
+            #logger.info("parsed response: %s", response_parsed)
             contract_response = ContractResponse(self, response_parsed)
         except :
             logger.exception('contract response is invalid')

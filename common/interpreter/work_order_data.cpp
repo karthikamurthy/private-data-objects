@@ -22,6 +22,7 @@
 #include "types.h"
 
 #include "crypto/crypto.h"
+#include "crypto/skenc.h"
 #include "jsonvalue.h"
 #include "packages/parson/parson.h"
 
@@ -49,23 +50,24 @@ namespace pdo
 			NULL, //"failed to retrieve work order input data",
 			encrypted_input_data);
 
+        WorkOrder::GetByteArray(
+			object,
+			"EncryptedDataEncryptionKey",
+			"failed to retrieve work order data encryption key",
+			data_encryption_key);
+
 		if (!encrypted_input_data.empty())
 		{
-			WorkOrder::GetByteArray(
+            DecryptInputData(encrypted_input_data);
+
+            WorkOrder::GetByteArray(
 				object,
 				"Sha256Hash",
 				"failed to retrieve work order input hash",
 				input_data_hash);
 
-			DecryptInputData(encrypted_input_data);
 			VerifyInputHash(decrypted_input_data, input_data_hash);
 		}
-
-		WorkOrder::GetByteArray(
-			object,
-			"EncryptedDataEncryptionKey",
-			"failed to retrieve work order data encryption key",
-			data_encryption_key);
 	}
 
 	void WorkOrderData::Pack(JSON_Array* json_array)
@@ -124,18 +126,19 @@ namespace pdo
 
 	void WorkOrderData::DecryptInputData(ByteArray encrypted_input_data)
 	{
-		// no decreyption, no hash check in the phase 1
-		// just coping encrypted to decrypted input data
-		decrypted_input_data = encrypted_input_data;
+		decrypted_input_data = pdo::crypto::skenc::DecryptMessage(data_encryption_key, encrypted_input_data);
+		//decrypted_input_data = encrypted_input_data;
 	}
 
 	std::string WorkOrderData::EncryptOutputData()
 	{
 		// no actual encryption in the phases 1 and 2
 		// just copy byte array to a string
+        ByteArray encrypted_output_data =
+            pdo::crypto::skenc::EncryptMessage(data_encryption_key, decrypted_output_data);
 		std::string encrypted_output_str(
-			decrypted_output_data.begin(),
-			decrypted_output_data.end());
+			encrypted_output_data.begin(),
+			encrypted_output_data.end());
 		return encrypted_output_str;
 	}
 }

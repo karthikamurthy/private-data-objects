@@ -42,6 +42,6 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE ${PDO_TOP_DIR}/common/package
 # Interpretter subdirectory
 ################################################################################
 
-ADD_SUBDIRECTORY (gipsy_scheme)
+ADD_SUBDIRECTORY(gipsy_scheme)
 ADD_SUBDIRECTORY(cpp_processor)
 

@@ -189,11 +189,6 @@ class Enclave(object) :
         :param encrypted_session_key: base64 encoded encrypted AES key
         :param encrypted_request: base64 encoded encrypted contract request
         """
-        logger.info(" pod helper session key is zero %s --- %s --", encrypted_session_key, encrypted_request)
-        #if encrypted_session_key == '0' :
-        #    logger.info("session key is zero %s --- %s --", encrypted_session_key, encrypted_request)
-        #else :
-        #    logger.info("sessio keyis non-zero")
 
         return pdo_enclave.send_to_contract(
             self.sealed_data,
