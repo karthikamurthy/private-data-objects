@@ -36,17 +36,18 @@ class ContractRequest(object) :
 
         self.operation = operation
         self.work_order = kwargs.get('work_order','')
-        self.contract_id = contract.contract_id
-        self.creator_id = contract.creator_id
-        self.encrypted_state_encryption_key = contract.get_state_encryption_key(enclave_service.enclave_id)
         self.enclave_service = enclave_service
-        self.originator_keys = request_originator_keys
-        self.channel_keys = keys.TransactionKeys()
-        self.session_key = crypto.SKENC_GenerateKey()
+        if not self.work_order:
+            self.contract_id = contract.contract_id
+            self.creator_id = contract.creator_id
+            self.encrypted_state_encryption_key = contract.get_state_encryption_key(enclave_service.enclave_id)
+            self.originator_keys = request_originator_keys
+            self.channel_keys = keys.TransactionKeys()
+            self.session_key = crypto.SKENC_GenerateKey()
 
-        self.contract_code = contract.contract_code
-        self.contract_state = contract.contract_state
-        self.message = ContractMessage(self.originator_keys, self.channel_keys, **kwargs)
+            self.contract_code = contract.contract_code
+            self.contract_state = contract.contract_state
+            self.message = ContractMessage(self.originator_keys, self.channel_keys, **kwargs)
 
     @property
     def enclave_keys(self) :

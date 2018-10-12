@@ -15,7 +15,6 @@
 
 #include <map>
 #include <string>
-#include "work_order.h"
 #include "work_order_data.h"
 #include "CppProcessor.h"
 #include "echo_work_order/EchoWorkOrder.h"
@@ -23,6 +22,12 @@
 CppContractWrapper* intkey_factory();
 CppContractWrapper* echo_factory();
 pdo::contracts::ContractInterpreter* echo_result_factory();
+
+ByteArray ConvertStringToByteArray(std::string s)
+{
+    ByteArray ba(s.begin(), s.end());
+    return ba;
+}
 
 class EchoResult: public pdo::contracts::ContractInterpreterBase
 {
@@ -55,10 +60,8 @@ public:
 		pdo::error::ThrowIfNull(result, "work order result not found");
 
 		EchoResultImpl echo_result_impl;
-		result_str = echo_result_impl.Process(
-			pdo::WorkOrder::ByteArrayToStr(message->decrypted_input_data));
-
-		result->decrypted_output_data = pdo::WorkOrder::StrToByteArray(result_str);
+		result_str = echo_result_impl.Process(ByteArrayToString(message->decrypted_input_data));
+		result->decrypted_output_data = ConvertStringToByteArray(result_str);
 	};
 
 } echo_result;

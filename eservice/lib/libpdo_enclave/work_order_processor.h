@@ -17,20 +17,23 @@
 
 #include <string>
 #include <vector>
-#include "packages/parson/parson.h"
+
+#include "enclave_data.h"
+
+#include "parson.h"
 #include "types.h"
-#include "work_order_data.h"
+#include "work_order_data_handler.h"
 
 namespace pdo
 {
-	class WorkOrder
+	class WorkOrderProcessor
 	{
 	public:
-		WorkOrder(){};
+		WorkOrderProcessor(){};
 
 		ByteArray CreateErrorResponse(int err_code, const char* err_message);
 
-		ByteArray Process(std::string json_str);
+		ByteArray Process(EnclaveData& enclaveData, std::string json_str);
 
 		static const char* GetJsonStr(
 			const JSON_Object* json_object,
@@ -60,13 +63,13 @@ namespace pdo
 		static std::string ByteArrayToStr(ByteArray ba);
 
 	protected:
-		void ParseJsonInput(std::string);
-		ByteArray CreateJsonOutput();
-		void ExecuteWorkOrder();
+		void ParseJsonInput(EnclaveData& enclaveData, std::string);
+		ByteArray CreateJsonOutput(std::vector<pdo::WorkOrderData> wo_data);
+		std::vector<pdo::WorkOrderData> ExecuteWorkOrder();
 		void VerifySignature();
 		void ComputeSignature();
 
-		std::vector<WorkOrderData> data_items;
+		std::vector<WorkOrderDataHandler> data_items;
 
 		std::string participant_signature;
 		std::string participant_generated_nonce;

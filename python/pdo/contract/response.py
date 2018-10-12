@@ -100,10 +100,11 @@ class ContractResponse(object) :
         """
         if request.work_order:
             logger.info("-----------------------Creating the work_order response ---------------------")
-            if 'result' not in response:
-                self.result = response['error']
-            else:
-                self.result= response['result']
+            #if 'result' not in response:
+            #    self.result = response['error']
+            #else:
+            #    self.result= response['result']
+            self.result = response
             return
 	
         self.status = response['Status']

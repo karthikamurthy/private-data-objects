@@ -18,19 +18,37 @@
 #include <string>
 #include <vector>
 
-#include "../types.h"
+#include "enclave_data.h"
+
+#include "parson.h"
+#include "types.h"
+#include "interpreter/work_order_data.h"
 
 
 namespace pdo
 {
-	class WorkOrderData
+	class WorkOrderDataHandler
 	{
 	public:
-		WorkOrderData();
+		WorkOrderDataHandler(){};
+
+		void Unpack(EnclaveData& enclaveData, const JSON_Object* object);
+		void Pack(JSON_Array* json_array);
 
 		std::string data_type;
+		std::string output_link;
 		ByteArray decrypted_input_data;
 		ByteArray decrypted_output_data;
 
+		ByteArray input_hash;
+		ByteArray output_hash;
+
+	protected:
+		void ComputeOutputHash();
+		void VerifyInputHash(ByteArray input_data, ByteArray input_hash);
+		void DecryptInputData(ByteArray encrypted_input_data);
+		std::string EncryptOutputData();
+
+		ByteArray data_encryption_key;
 	};
 }

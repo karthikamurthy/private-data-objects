@@ -17,25 +17,27 @@
 #include <string>
 #include <vector>
 
-#include "../error.h"
-#include "../pdo_error.h"
-#include "../types.h"
+#include "error.h"
+#include "pdo_error.h"
+#include "types.h"
 
-#include "../crypto/crypto.h"
-#include "../jsonvalue.h"
-#include "../packages/parson/parson.h"
+#include "crypto.h"
+#include "jsonvalue.h"
+#include "parson.h"
 
+#include "enclave_utils.h"
+#include "enclave_data.h"
 
 #include "interpreter/ContractInterpreter.h"
-
-#include "work_order.h"
-#include "work_order_data.h"
+#include "interpreter/work_order_data.h"
+#include "work_order_processor.h"
+#ifdef CPP_CONTRACT_TEST
 #include "interpreter/cpp_processor/CppProcessor.h"
-
+#endif
 
 namespace pdo
 {
-    const char* WorkOrder::GetJsonStr(
+    const char* WorkOrderProcessor::GetJsonStr(
         const JSON_Object* json_object, 
         const char* name, 
         const char* err_msg)
@@ -56,12 +58,12 @@ namespace pdo
         return pvalue;
     }
 
-    void WorkOrder::GetByteArray(const JSON_Object* object,
+    void WorkOrderProcessor::GetByteArray(const JSON_Object* object,
         const char* name,
         const char* err_msg,
         ByteArray& dst)
     {
-        const char* pvalue = WorkOrder::GetJsonStr(object, name, err_msg);
+        const char* pvalue = WorkOrderProcessor::GetJsonStr(object, name, err_msg);
         if (!pvalue)
         {
             if (err_msg)
@@ -78,12 +80,12 @@ namespace pdo
         std::copy(str.begin(), str.end(), std::back_inserter(dst));
     }
 
-    double WorkOrder::GetJsonNumber(const JSON_Object* object, const char* name)
+    double WorkOrderProcessor::GetJsonNumber(const JSON_Object* object, const char* name)
     {
         return json_object_dotget_number(object, name);
     }
 
-    void WorkOrder::ParseJsonInput(std::string json_str)
+    void WorkOrderProcessor::ParseJsonInput(EnclaveData& enclaveData, std::string json_str)
     {
         // Parse the work order request
         JsonValue parsed(json_parse_string(json_str.c_str()));
@@ -134,25 +136,25 @@ namespace pdo
         for (size_t i = 0; i < count; i++)
         {
             JSON_Object* data_object = json_array_get_object(data_array, i);
-            WorkOrderData wo_data;
-            wo_data.Unpack(data_object);
+            WorkOrderDataHandler wo_data;
+            wo_data.Unpack(enclaveData, data_object);
             data_items.push_back(wo_data);
         }
     }
 
-    void WorkOrder::JsonSetStr(JSON_Object* json, const char* name, const char* value, const char* err)
+    void WorkOrderProcessor::JsonSetStr(JSON_Object* json, const char* name, const char* value, const char* err)
     {
         JSON_Status jret = json_object_dotset_string(json, name, value);
         pdo::error::ThrowIf<pdo::error::RuntimeError>(jret != JSONSuccess, err);
     }
 
-    void WorkOrder::JsonSetNumber(JSON_Object* json, const char* name, double value, const char* err)
+    void WorkOrderProcessor::JsonSetNumber(JSON_Object* json, const char* name, double value, const char* err)
     {
         JSON_Status jret = json_object_dotset_number(json, name, value);
         pdo::error::ThrowIf<pdo::error::RuntimeError>(jret != JSONSuccess, err);
     }
 
-    ByteArray WorkOrder::CreateJsonOutput()
+    ByteArray WorkOrderProcessor::CreateJsonOutput(std::vector<pdo::WorkOrderData> wo_data)
     {
         JSON_Status jret;
 
@@ -183,11 +185,18 @@ namespace pdo
         JSON_Array* data_array = json_object_get_array(result, "Data");
         pdo::error::ThrowIfNull(data_array, "failed to serialize the dependency array");
 
-        for(auto d : this->data_items)
+        for(auto d1 : wo_data)
         {
-            if (!d.decrypted_output_data.empty())
+            if (!d1.decrypted_output_data.empty())
             {
-                d.Pack(data_array);
+                for(auto d2 : this->data_items)
+                {
+                    if (d1.data_type == d2.data_type)
+                    {
+                        d2.decrypted_output_data = d1.decrypted_output_data;
+                        d2.Pack(data_array);
+                    }
+                }
             }
         }
 
@@ -218,56 +227,67 @@ namespace pdo
         return serialized_response;
     }
 
-    ByteArray WorkOrder::StrToByteArray(std::string str)
+    ByteArray WorkOrderProcessor::StrToByteArray(std::string str)
     {
         ByteArray ba;
         std::copy(str.begin(), str.end(), std::back_inserter(ba));
         return ba;
     }
 
-    std::string WorkOrder::ByteArrayToStr(ByteArray ba)
+    std::string WorkOrderProcessor::ByteArrayToStr(ByteArray ba)
     {
         std::string str(ba.begin(), ba.end());
         return str;
     }
 
-    void WorkOrder::ExecuteWorkOrder()
+    std::vector<pdo::WorkOrderData> WorkOrderProcessor::ExecuteWorkOrder()
     {
-       
+        std::vector<pdo::WorkOrderData> wo_data;
         for (size_t i = 0; i < data_items.size(); i++)
         {
-            WorkOrderData& wo_data = data_items.at(i);
-            if (wo_data.data_type.compare("code") ==0)
+            WorkOrderDataHandler& code_data_item = data_items.at(i);
+            if (code_data_item.data_type.compare("code") ==0)
             {
+                for(auto d : this->data_items)
+                {
+                    pdo::WorkOrderData wo_data_item;
+                    wo_data_item.data_type = d.data_type;
+                    wo_data_item.decrypted_input_data = d.decrypted_input_data;
+                    wo_data_item.decrypted_output_data = d.decrypted_output_data;
+                    wo_data.push_back(wo_data_item);
+                }
 
-                CppProcessor processor;                 
+            #ifdef CPP_CONTRACT_TEST
+                CppProcessor processor;
+                std:string code = ByteArrayToStr(code_data_item.decrypted_input_data);
                 processor.process_work_order(
-                    ByteArrayToStr(wo_data.decrypted_input_data),
+                    code,
                     StrToByteArray(tc_service_address),
                     StrToByteArray(participant_address),
                     StrToByteArray(enclave_id),
                     StrToByteArray(work_order_id),
-                    data_items);
-                    
-                return;
+                    wo_data);
+            #endif
+                return wo_data;
             }
         }
         pdo::error::RuntimeError("Work Order Code ID not  Found\n");
+        return wo_data;
     }
 
-    void WorkOrder::VerifySignature()
+    void WorkOrderProcessor::VerifySignature()
     {
         // do nothing during phases 1 and 2
     }
 
-    void WorkOrder::ComputeSignature()
+    void WorkOrderProcessor::ComputeSignature()
     {
         // dummy implementation for phases phases 1 and 2
         enclave_generated_nonce = "123";
         enclave_signature = "99999";
     }
 
-    ByteArray WorkOrder::CreateErrorResponse(int err_code, const char* err_message)
+    ByteArray WorkOrderProcessor::CreateErrorResponse(int err_code, const char* err_message)
     {
         JSON_Status jret;
 
@@ -306,16 +326,15 @@ namespace pdo
 
     }
 
-    ByteArray WorkOrder::Process(std::string json_str)
+    ByteArray WorkOrderProcessor::Process(EnclaveData& enclaveData, std::string json_str)
     {
-        
         try
         {
-            ParseJsonInput(json_str);
+            ParseJsonInput(enclaveData, json_str);
             VerifySignature();
-            ExecuteWorkOrder();
+            std::vector<pdo::WorkOrderData> wo_data = ExecuteWorkOrder();
             ComputeSignature();
-            return CreateJsonOutput();
+            return CreateJsonOutput(wo_data);
         }
         catch (pdo::error::ValueError& e)
         {

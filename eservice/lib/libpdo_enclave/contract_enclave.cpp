@@ -39,7 +39,8 @@
 #include "contract_request.h"
 #include "contract_response.h"
 #include "contract_secrets.h"
-#include "work_order.h"
+//#include "interpreter/work_order.h"
+#include "work_order_processor.h"
 
 ByteArray last_result;
 
@@ -147,20 +148,20 @@ pdo_err_t ecall_HandleContractRequest(const uint8_t* inSealedSignupData,
         EnclaveData enclaveData(inSealedSignupData);
         ByteArray encrypted_key(
             inEncryptedSessionKey, inEncryptedSessionKey + inEncryptedSessionKeySize);
-        
+
         ByteArray session_key = enclaveData.decrypt_message(encrypted_key);
+
         //Ascii Value of 0 is 48
         if(session_key[0] == 48) {
             ByteArray encrypted_request(
-                inSerializedRequest, inSerializedRequest + inSerializedRequestSize);
-#ifdef CPP_CONTRACT_TEST
-            pdo::WorkOrder wo_process; 
+               inSerializedRequest, inSerializedRequest + inSerializedRequestSize);
+            pdo::WorkOrderProcessor wo_processor;
             std::string wo_string(encrypted_request.begin(), encrypted_request.end());
-            last_result = wo_process.Process(wo_string);
-#endif
+            last_result = wo_processor.Process(enclaveData, wo_string);
         }
         else
         {
+            SAFE_LOG(PDO_LOG_ERROR, "Point 7");
             ByteArray encrypted_request(
                 inSerializedRequest, inSerializedRequest + inSerializedRequestSize);
             ContractRequest request(session_key, encrypted_request);
