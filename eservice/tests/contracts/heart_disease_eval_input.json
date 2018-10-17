@@ -1,0 +1,36 @@
+{
+  "jsonrpc": "2.0",	
+  "method": "WorkOrderSubmit",
+  "id": 101,
+  "params": {
+    "ResponseTimeoutMSecs": 60000,
+    "ParticipantSignature": "p-sig",
+    "ParticipantGeneratedNonce": "p-nonce",
+    "TcServiceAddress": "tc-addrd",	
+    "EnclaveId": "enclave-id",
+    "WorkOrderId": "wo-id",
+    "ParticipantAddress": "p-addr", 
+    "Data": 
+    [
+      {
+        "Type": "code",	
+        "Sha256Hash": "mhash555",
+        "InputLink": "#inline",
+        "BLOB": "heart-disease-eval:",
+        "EncryptedDataEncryptionKey": "33333"
+      },
+      {
+        "Type": "message",	
+        "Sha256Hash": "mhash444",
+        "InputLink": "#inline",
+        "BLOB": "Heart disease evaluation data: 32 1 1 156  132 125 1 95  1 0 1 1 3 1",
+        "EncryptedDataEncryptionKey": "11111"
+      },
+      {
+        "Type": "result",	
+        "OutputLink": "#inline", 
+        "EncryptedDataEncryptionKey": "22222"
+      }
+    ]
+  }
+}
