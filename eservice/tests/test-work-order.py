@@ -101,6 +101,8 @@ def ExecuteWorkOrder(config, enclave, indent=4) :
             json_str = json.dumps(wo_response.result, indent=indent)
             logger.info('Response:\n%s', json_str)
 
+            json_str = extract_json_plain_param(json_str, consensus_file_name, indent=indent)
+
             try:
                 logger.info('save result data to %s', output_json_file_name)
                 with open(output_json_file_name, "w") as file:
@@ -142,7 +144,7 @@ def LocalMain(config) :
     logger.info('execute work order')
     ExecuteWorkOrder(config, enclave)
 
-    exit(0)
+    #exit(0)
 
 
 ## XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -179,13 +181,25 @@ config_map = {
 def ParseCommandLine(config, args) :
     global input_json_str
     global output_json_file_name
+    global consensus_file_name
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--logfile', help='Name of the log file, __screen__ for standard output', type=str)
     parser.add_argument('--loglevel', help='Logging level', type=str)
-    parser.add_argument('--input_file', help='JSON input file name', type=str, default=None) # ??? [])
-    parser.add_argument('--output_file', help='JSON output file name', type=str, default=None)  # ??? [])
+    parser.add_argument('-i', '--input_file', help='JSON input file name', type=str, default='/iexec/input.json')
+    parser.add_argument(
+        '-c', '--consensus_file',
+        help='iExec consensus (result string for hash) file name',
+        type=str,
+        default='/iexec/consensus.iexec')
+    # ???parser.add_argument('--output_file', help='JSON output file name', type=str, default=None)  # ??? [])
+    parser.add_argument(
+        'output_file',
+        help='JSON output file name',
+        type=str,
+        default='/iexec/output.json',
+        nargs='?')
 
     options = parser.parse_args(args)
 
@@ -204,11 +218,14 @@ def ParseCommandLine(config, args) :
             logger.info('load JSON input from %s', options.input_file)
             with open(options.input_file, "r") as file:
                 input_json_str = file.read()
+                input_json_str = insert_json_plain_param(input_json_str)
         except:
             logger.error("ERROR: Failed to read from file %s", options.input_file)
             exit(1)
     else:
         input_json_str = None
+
+    consensus_file_name = options.consensus_file
 
     if options.output_file:
         output_json_file_name = options.output_file
@@ -218,7 +235,7 @@ def ParseCommandLine(config, args) :
 
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------
-def Main() :
+def Main(args=None) :
     import pdo.common.config as pconfig
     import pdo.common.logger as plogger
 
@@ -229,7 +246,7 @@ def Main() :
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='configuration file', nargs = '+')
     parser.add_argument('--config-dir', help='configuration folder', nargs = '+')
-    (options, remainder) = parser.parse_known_args()
+    (options, remainder) = parser.parse_known_args(args)
 
     if options.config :
         conffiles = options.config
@@ -254,5 +271,78 @@ def Main() :
     sys.stderr = plogger.stream_to_logger(logging.getLogger('STDERR'), logging.WARN)
 
     LocalMain(config)
+
+
+def load_file(fname, def_content=None):
+    try:
+        with open(fname) as fd:
+            try:
+                content = fd.read().strip()
+                fd.close()
+                return content
+            except OSError as err:
+                print('Failed to read file {0}: {1}'.format(fname, err))
+                raise Exception("ERROR: Failed to read file: " + fname)
+    except TypeError as err:
+        if def_content != None:
+            return def_content
+        print('Failed to open file {0}: {1}'.format(fname, err))
+        raise Exception("ERROR: Failed to open file: " + fname)
+    except OSError as err:
+        if def_content != None:
+            return def_content
+        print('Failed to open file {0}: {1}'.format(fname, err))
+        raise Exception("ERROR: Failed to open file: " + fname)
+
+
+def save_file(fname, content):
+    try:
+        with open(fname, "w") as fdw:
+            try:
+                fdw.write(content)
+                fdw.close()
+            except OSError as err:
+                print('Failed to write file {0}: {1}'.format(fname, err))
+                raise Exception("ERROR: Failed to write file: " + fname)
+    except OSError as err:
+        print('Failed to open file for writing {0}: {1}'.format(fname, err))
+        raise Exception("ERROR: Failed to open file for writing: " + fname)
+
+
+def insert_json_plain_param(json_str, obj_name='params', indent=None):
+    j=json.loads(json_str)
+    p=j[obj_name]
+    d=p['Data']
+
+    item={}
+    item['Type']="plain"
+    item['OutputLink'] = "#inline"
+    item['BLOB'] = "Plain RESULT"
+    item['EncryptedDataEncryptionKey'] = ""
+
+    d.append(item)
+
+    json_str=json.dumps(j, indent=indent)
+
+    return json_str
+
+
+def extract_json_plain_param(json_str, filename, obj_name='result', indent=None):
+    j=json.loads(json_str)
+    p=j[obj_name]
+    data=p['Data']
+
+    index = 0
+    for d in data:
+        index = index + 1
+        if d['Type'] == 'plain':
+            if filename:
+                save_file(filename, data[index - 1]['BLOB'])
+            data.pop(index - 1)
+            break
+
+    json_str=json.dumps(j, indent=indent)
+
+    return json_str
 
 Main()

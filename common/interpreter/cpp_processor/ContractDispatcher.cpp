@@ -45,6 +45,7 @@ public:
 		std::string result_str;
 		pdo::WorkOrderData* message = 0;
 		pdo::WorkOrderData* result = 0;
+		pdo::WorkOrderData* plain = 0;
 		for (size_t i = 0; i < work_order_data.size(); i++)
 		{
 			pdo::WorkOrderData& wo_data = work_order_data.at(i);
@@ -57,6 +58,11 @@ public:
 			{
 				result = &wo_data;
 			}
+			else
+			if (wo_data.data_type == "plain")
+			{
+				plain = &wo_data;
+			}
 		}
 		pdo::error::ThrowIfNull(message, "work order message not found");
 		pdo::error::ThrowIfNull(result, "work order result not found");
@@ -64,6 +70,10 @@ public:
 		EchoResultImpl echo_result_impl;
 		result_str = echo_result_impl.Process(ByteArrayToString(message->decrypted_input_data));
 		result->decrypted_output_data = ConvertStringToByteArray(result_str);
+		if (plain)
+		{
+		    plain->decrypted_output_data = ConvertStringToByteArray(result_str);
+		}
 	};
 
 } echo_result;
@@ -82,6 +92,7 @@ public:
 		std::string result_str;
 		pdo::WorkOrderData* message = 0;
 		pdo::WorkOrderData* result = 0;
+		pdo::WorkOrderData* plain = 0;
 		for (size_t i = 0; i < work_order_data.size(); i++)
 		{
 			pdo::WorkOrderData& wo_data = work_order_data.at(i);
@@ -94,6 +105,11 @@ public:
 			{
 				result = &wo_data;
 			}
+			else
+			if (wo_data.data_type == "plain")
+			{
+				plain = &wo_data;
+			}
 		}
 		pdo::error::ThrowIfNull(message, "work order message not found");
 		pdo::error::ThrowIfNull(result, "work order result not found");
@@ -103,6 +119,10 @@ public:
 			ByteArrayToString(message->decrypted_input_data));
 
 		result->decrypted_output_data = ConvertStringToByteArray(result_str);
+		if (plain)
+		{
+		    plain->decrypted_output_data = ConvertStringToByteArray(result_str);
+		}
 	};
 
 } heart_disease_eval_worker;

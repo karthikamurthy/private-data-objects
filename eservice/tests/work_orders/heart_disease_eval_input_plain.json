@@ -17,19 +17,19 @@
         "Sha256Hash": "mhash555",
         "InputLink": "#inline",
         "BLOB": "heart-disease-eval:",
-        "EncryptedDataEncryptionKey": "33333"
+        "EncryptedDataEncryptionKey": ""
       },
       {
         "Type": "message",	
         "Sha256Hash": "mhash444",
         "InputLink": "#inline",
         "BLOB": "Heart disease evaluation data: 32 1 1 156  132 125 1 95  1 0 1 1 3 1",
-        "EncryptedDataEncryptionKey": "11111"
+        "EncryptedDataEncryptionKey": ""
       },
       {
         "Type": "result",	
         "OutputLink": "#inline", 
-        "EncryptedDataEncryptionKey": "22222"
+        "EncryptedDataEncryptionKey": ""
       }
     ]
   }
