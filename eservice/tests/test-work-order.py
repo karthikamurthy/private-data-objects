@@ -192,7 +192,9 @@ def ParseCommandLine(config, args) :
         '-c', '--consensus_file',
         help='iExec consensus (result string for hash) file name',
         type=str,
-        default='/iexec/consensus.iexec')
+        default='/iexec/consensus.iexec',
+        nargs='?',
+        const="")
     # ???parser.add_argument('--output_file', help='JSON output file name', type=str, default=None)  # ??? [])
     parser.add_argument(
         'output_file',
@@ -273,28 +275,6 @@ def Main(args=None) :
     LocalMain(config)
 
 
-def load_file(fname, def_content=None):
-    try:
-        with open(fname) as fd:
-            try:
-                content = fd.read().strip()
-                fd.close()
-                return content
-            except OSError as err:
-                print('Failed to read file {0}: {1}'.format(fname, err))
-                raise Exception("ERROR: Failed to read file: " + fname)
-    except TypeError as err:
-        if def_content != None:
-            return def_content
-        print('Failed to open file {0}: {1}'.format(fname, err))
-        raise Exception("ERROR: Failed to open file: " + fname)
-    except OSError as err:
-        if def_content != None:
-            return def_content
-        print('Failed to open file {0}: {1}'.format(fname, err))
-        raise Exception("ERROR: Failed to open file: " + fname)
-
-
 def save_file(fname, content):
     try:
         with open(fname, "w") as fdw:
@@ -302,11 +282,9 @@ def save_file(fname, content):
                 fdw.write(content)
                 fdw.close()
             except OSError as err:
-                print('Failed to write file {0}: {1}'.format(fname, err))
-                raise Exception("ERROR: Failed to write file: " + fname)
+                logger.error('Failed to write file {0}: {1}'.format(fname, err))
     except OSError as err:
-        print('Failed to open file for writing {0}: {1}'.format(fname, err))
-        raise Exception("ERROR: Failed to open file for writing: " + fname)
+        logger.error('Failed to open file for writing {0}: {1}'.format(fname, err))
 
 
 def insert_json_plain_param(json_str, obj_name='params', indent=None):
@@ -328,21 +306,25 @@ def insert_json_plain_param(json_str, obj_name='params', indent=None):
 
 
 def extract_json_plain_param(json_str, filename, obj_name='result', indent=None):
-    j=json.loads(json_str)
-    p=j[obj_name]
-    data=p['Data']
+    try:
+        j=json.loads(json_str)
+        p=j[obj_name]
+        data=p['Data']
 
-    index = 0
-    for d in data:
-        index = index + 1
-        if d['Type'] == 'plain':
-            if filename:
-                save_file(filename, data[index - 1]['BLOB'])
-            data.pop(index - 1)
-            break
+        index = 0
+        for d in data:
+            index = index + 1
+            if d['Type'] == 'plain':
+                if filename:
+                    save_file(filename, data[index - 1]['BLOB'])
+                data.pop(index - 1)
+                break
 
-    json_str=json.dumps(j, indent=indent)
+        json_str = json.dumps(j, indent=indent)
+    except:
+        logger.error("Failed to parse JSON output file")
 
     return json_str
+
 
 Main()
