@@ -16,14 +16,14 @@
 
 
 # run plain WO to make sure that the enclave is registered 
-./test-work-order.py --input_file work_orders/wo_test_input_plain.json --output_file work_orders/wo_output.json
+./test-work-order.py -i work_orders/wo_test_input_plain.json -c work_orders/wo_output_consensus.txt work_orders/wo_output.json
 
 
 # create encrypted input JSON using correct enclave RSA encryption key
 python encrypt_wo_data.py encrypt -a work_orders/aes_keys.json -r work_orders/data/rsa_pub_key.pem -i work_orders/wo_test_input_plain.json -o work_orders/wo_test_input_enc.json
 
 # execute the WO with encrypted data
-./test-work-order.py --input_file work_orders/wo_test_input_enc.json --output_file work_orders/wo_output.json
+./test-work-order.py -i work_orders/wo_test_input_enc.json  -c work_orders/wo_output_consensus.txt work_orders/wo_output.json
 
 # decrept JSOn putput (create JSON file with decrypted data)
 python encrypt_wo_data.py decrypt -a work_orders/aes_keys.json -i work_orders/wo_output.json -o work_orders/wo_test_output_dec.json
